@@ -1,4 +1,4 @@
-package com.pokemonbattler.model;
+package com.pokemonbattler;
 
 import com.pokemonbattler.exception.InvalidAttackException;
 
