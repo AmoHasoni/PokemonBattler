@@ -1,4 +1,4 @@
-package exception;
+package com.pokemonbattler.exception;
 
 /*
   Kastas när data för en Attack bryter mot domänreglerna, t.ex. tomt
