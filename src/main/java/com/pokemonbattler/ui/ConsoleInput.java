@@ -1,4 +1,4 @@
-package com.pokemonbattler;
+package com.pokemonbattler.ui;
 
 public class ConsoleInput {
 }

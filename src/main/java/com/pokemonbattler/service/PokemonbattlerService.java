@@ -1,4 +1,4 @@
-package com.pokemonbattler;
+package com.pokemonbattler.service;
 import com.pokemonbattler.exception.PokemonNotFoundException;
 import com.pokemonbattler.model.Attack;
 import com.pokemonbattler.model.Pokemon;
@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class pokemonbattler {
+public class PokemonbattlerService {
 
     private final List<Pokemon> pokedex = new ArrayList<>();
     private final JsonStorage storage = new JsonStorage();

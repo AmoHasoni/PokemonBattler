@@ -1,4 +1,4 @@
-package com.pokemonbattler;
+package com.pokemonbattler.model;
 
 /*
 De typer en Pokémon och en Attack kan ha. Delas mellan båda klasserna

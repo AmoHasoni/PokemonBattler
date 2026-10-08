@@ -1,4 +1,4 @@
-package com.pokemonbattler;
+package com.pokemonbattler.model;
 
 import java.util.ArrayList;
 import java.util.List;
