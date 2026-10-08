@@ -6,9 +6,6 @@ import com.pokemonbattler.exception.PokemonNotFoundException;
 import com.pokemonbattler.model.Attack;
 import com.pokemonbattler.model.Pokemon;
 import com.pokemonbattler.model.Type;
-import com.pokemonbattler.service.PokemonbattlerService;
-import com.pokemonbattler.ui.ConsoleInput;
-import com.pokemonbattler.ui.Menu;
 
 import java.io.IOException;
 import java.util.List;

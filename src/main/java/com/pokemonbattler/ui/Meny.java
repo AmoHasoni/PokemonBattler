@@ -1,4 +1,4 @@
 package com.pokemonbattler.ui;
 
-public class Menu {
+public class Meny {
 }
