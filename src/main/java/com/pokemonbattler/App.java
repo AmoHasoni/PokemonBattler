@@ -13,7 +13,7 @@ import com.pokemonbattler.exception.InvalidAttackException;
 import com.pokemonbattler.exception.InvalidPokemonException;
 import com.pokemonbattler.persistence.JsonRepository;
 import com.pokemonbattler.persistence.Repository;
-import com.pokemonbattler.stats.Statistics;
+import com.pokemonbattler.statistics.Stats;
 import com.pokemonbattler.ui.ConsoleInput;
 import com.pokemonbattler.ui.Menu;
 
@@ -34,16 +34,16 @@ public class App {
     private final ConsoleInput input;
     private final PrintStream out;
     private final Repository<List<Pokemon>> pokemonRepo;
-    private final Repository<Statistics> statsRepo;
+    private final Repository<Stats> statsRepo;
     private final Random random = new Random();
     private final DamageCalculator calculator = new DamageCalculator(new TypeChart(), random);
     private final WildPokemonPool wildPool = new WildPokemonPool(random);
 
     private PokemonCollection collection;
-    private Statistics statistics;
+    private Stats stats;
 
     public App(ConsoleInput input, PrintStream out,
-               Repository<List<Pokemon>> pokemonRepo, Repository<Statistics> statsRepo) {
+               Repository<List<Pokemon>> pokemonRepo, Repository<Stats> statsRepo) {
         this.input = input;
         this.out = out;
         this.pokemonRepo = pokemonRepo;
@@ -55,8 +55,8 @@ public class App {
         Repository<List<Pokemon>> pokemonRepo = new JsonRepository<>(
                 DATA_DIR.resolve("pokemons.json"), new TypeReference<>() {},
                 () -> PokemonCollection.starter().toList());
-        Repository<Statistics> statsRepo = new JsonRepository<>(
-                DATA_DIR.resolve("stats.json"), new TypeReference<>() {}, Statistics::new);
+        Repository<Stats> statsRepo = new JsonRepository<>(
+                DATA_DIR.resolve("stats.json"), new TypeReference<>() {}, Stats::new);
         new App(new ConsoleInput(System.in, out), out, pokemonRepo, statsRepo).run();
     }
 
@@ -116,7 +116,7 @@ public class App {
                 out.println("Sparad data inläst.");
             }
         }
-        statistics = statsRepo.load();
+        stats = statsRepo.load();
         statsRepo.lastWarning().ifPresent(w ->
                 out.println("Kunde inte läsa statistiken (" + w + "). Börjar om från noll."));
     }
@@ -134,7 +134,7 @@ public class App {
             out.println("Kunde inte spara: " + pokemonRepo.lastWarning().orElse("okänt fel"));
             ok = false;
         }
-        if (!statsRepo.save(statistics)) {
+        if (!statsRepo.save(stats)) {
             out.println("Kunde inte spara statistik: " + statsRepo.lastWarning().orElse("okänt fel"));
             ok = false;
         }
@@ -323,7 +323,7 @@ public class App {
                 calculator, out);
         try {
             BattleResult result = battle.run();
-            statistics.record(result);
+            stats.record(result);
         } finally {
             // Sparar efter varje strid, även om den avbryts (t.ex. Ctrl+D).
             saveAll();
@@ -331,7 +331,7 @@ public class App {
     }
 
     private void showStatistics() {
-        out.println(statistics.format().stripTrailing());
+        out.println(stats.format().stripTrailing());
     }
 
     // ---------- Hjälpmetoder ----------
