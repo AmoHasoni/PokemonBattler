@@ -1,18 +1,24 @@
 package com.pokemonbattler.service;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.pokemonbattler.exception.PokemonNotFoundException;
 import com.pokemonbattler.model.Attack;
 import com.pokemonbattler.model.Pokemon;
 import com.pokemonbattler.model.Type;
-import com.pokemonbattler.persistence.JsonStorage;
+import com.pokemonbattler.persistence.JsonRepository;
+import com.pokemonbattler.persistence.Repository;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PokemonbattlerService {
 
     private final List<Pokemon> pokedex = new ArrayList<>();
-    private final JsonStorage storage = new JsonStorage();
+    private final Repository<List<Pokemon>> storage = new JsonRepository<>(
+            Path.of("data", "pokemons.json"), new TypeReference<>() {
+    }, List::of);
+
 
     /*
      Affärslogiken för Pokédexen: håller listan med Pokémon, hanterar
@@ -84,31 +90,33 @@ public class PokemonbattlerService {
     }
 
     // Returnerar true om det finns en sparad fil att ladda från.
-    public boolean savedFileExists() {
-        return storage.fileExists();
-    }
+    public boolean savedFileExists() throws IOException {
+        return storage.exists();
 
-    // Sparar hela listan till filen.
-    public void save() throws IOException {
-        storage.save(pokedex);
-    }
+        // Sparar hela listan till filen.
+        public void save () throws IOException {
+            storage.save(pokedex);
+        }
 
     /*
      Läser in listan från filen och ersätter nuvarande data. Kastar IOException
      om filen är trasig, tom eller innehåller null, och då lämnas listan orörd.
      */
-    public void load() throws IOException {
-        List<Pokemon> loaded = storage.load();
-        if (loaded == null || loaded.contains(null)) {
-            throw new IOException("Filen innehåller ogiltig data.");
-        }
-        for (Pokemon p : loaded) {
-            if (p.getName() == null || p.getType() == null || p.getMaxHp() < Pokemon.MIN_HP
-                    || p.getAttackCount() < Pokemon.MIN_ATTACKS) {
-                throw new IOException("Filen innehåller en ofullständig Pokémon.");
+        public void load() throws IOException {
+            List<Pokemon> loaded = storage.load();
+            if (storage.lastWarning().isPresent()) {
+                throw new IOException(storage.lastWarning().get());
             }
+            if (loaded == null || loaded.contains(null)) {
+                throw new IOException("Filen innehåller ogiltig data.");
+            }
+            for (Pokemon p : loaded) {
+                if (p.getName() == null || p.getType() == null || p.getMaxHp() < Pokemon.MIN_HP
+                        || p.getAttackCount() < Pokemon.MIN_ATTACKS) {
+                    throw new IOException("Filen innehåller en ofullständig Pokémon.");
+                }
+            }
+            pokedex.clear();
+            pokedex.addAll(loaded);
         }
-        pokedex.clear();
-        pokedex.addAll(loaded);
     }
-}
