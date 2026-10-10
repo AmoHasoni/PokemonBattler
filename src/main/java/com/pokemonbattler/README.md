@@ -83,34 +83,6 @@ och ingen kritisk träff ger `40 × 2.0 × 0.9 × 1.0 = 72` i skada.
 
 Alla övriga kombinationer ger 1x.
 
-## OOP-design
-
-```
-com.pokemonbattler
-├── App                  huvudmeny, kopplar ihop alla delar
-├── PokemonCollection    spelarens samling (unika namn, stridsklara Pokémon)
-├── Pokemon, Attack      domänklasser som validerar sig själva
-├── Type                 enum med typerna
-├── battle
-│   ├── Combatant        abstrakt klass: den som styr en Pokémon i strid
-│   ├── HumanCombatant   spelaren – väljer attack via konsolmeny
-│   ├── CpuCombatant     datorn – väljer attack slumpvis
-│   ├── Battle           turordning, stridslogg och resultat
-│   ├── DamageCalculator skadeformel, träff/miss, kritiska träffar
-│   ├── TypeChart        typeffektivitetstabell
-│   ├── AttackResult, BattleResult, BattleOutcome
-│   └── WildPokemonPool  vilda motståndare
-├── persistence
-│   ├── Repository<T>    interface för load/save
-│   └── JsonRepository<T> implementation med Jackson
-├── stats
-│   └── Statistics, PokemonRecord
-├── ui
-│   ├── ConsoleInput     all säker inläsning från konsolen
-│   └── Menu             generisk meny
-└── exception
-    └── InvalidPokemonException, InvalidAttackException, InputAbortedException
-```
 
 ### Arv och polymorfism – `Combatant`
 
