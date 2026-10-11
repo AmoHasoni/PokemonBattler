@@ -6,6 +6,8 @@ Pokédexen från inlämning 1: all funktionalitet därifrån finns kvar, men kod
 är omstrukturerad mot bättre OOP och utökad med ett stridssystem, JSON-lagring
 och statistik.
 
+Kurs: Programmering med Java, grund. Pokemon Battler Inlämning 2.
+
 ## Krav
 - Java 17 eller nyare
 - Maven
