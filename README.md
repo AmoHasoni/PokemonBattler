@@ -10,7 +10,6 @@ och statistik.
 - Java 17 eller nyare
 - Maven
 - IntelliJ IDEA
-- yhhji
 
 ## Köra programmet
 
