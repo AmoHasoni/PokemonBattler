@@ -1,6 +1,7 @@
 package com.pokemonbattler.model;
 
 import com.pokemonbattler.exception.InvalidAttackException;
+import com.pokemonbattler.exception.InvalidPokemonException;
 
 import java.util.ArrayList;
 import java.util.List;
