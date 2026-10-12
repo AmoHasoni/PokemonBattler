@@ -10,7 +10,7 @@ Kurs: Programmering med Java, grund Inlämning 2.
 
 ## Krav
 
-- Java 21
+- Java 17 eller nyare
 - Maven
 - IntelliJ IDEA (rekommenderas)
 
