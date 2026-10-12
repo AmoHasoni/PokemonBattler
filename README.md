@@ -122,8 +122,8 @@ com.pokemonbattler
 │   ├── BattleOutcome     enum: WIN, LOSS, FLED
 │   └── WildPokemonPool   vilda motståndare
 ├── persistence
-│   ├── Repository<T>     interface för load/save
-│   └── JsonRepository<T> implementation med Jackson
+│   ├── Repository        interface för load/save
+│   └── JsonRepository    implementation med Jackson
 ├── statistics
 │   ├── Stats             total statistik, mest använda attack/Pokémon
 │   └── PokemonRecord     vinster/förluster per Pokémon
