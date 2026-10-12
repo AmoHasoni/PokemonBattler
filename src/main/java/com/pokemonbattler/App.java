@@ -144,7 +144,7 @@ public class App {
         return ok;
     }
 
-    // Data i minnet lämnas orörd om filen saknas eller är trasig.
+    // Datan i minnet lämnas orörd om filen saknas eller är trasig.
     private void loadFromFile() {
         if (!pokemonRepo.exists()) {
             out.println("Ingen sparad fil hittades.");

@@ -51,7 +51,7 @@
   "type" : "NORMAL",
   "maxHp" : 55,
   "currentHp" : 55,
-  "speed" : 55,
+  "speed" : 6,
   "attacks" : [ {
     "name" : "Tackle",
     "baseDamage" : 40,
