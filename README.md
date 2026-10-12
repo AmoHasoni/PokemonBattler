@@ -75,9 +75,9 @@ max HP, aktuellt HP och speed, samt lägga till och ta bort attacker (1–4 st).
 skada = avrunda( basskada × typeffektivitet × slumpfaktor × kritisk )
 ```
 
-- `typeffektivitet` – 2.0, 1.0 eller 0.5 enligt tabellen nedan
-- `slumpfaktor` – slumpat decimaltal mellan 0.85 och 1.00
-- `kritisk` – 2.0 med chansen 1/16, annars 1.0. Visas i loggen som "Kritisk träff!"
+- `typeffektivitet` - 2.0, 1.0 eller 0.5 enligt tabellen nedan
+- `slumpfaktor` - slumpat decimaltal mellan 0.85 och 1.00
+- `kritisk` - 2.0 med chansen 1/16, annars 1.0. Visas i loggen som "Kritisk träff!"
 - En träff gör alltid minst 1 i skada.
 
 Exempel: Ember (40 i basskada, FIRE) mot en GRASS-Pokémon med slumpfaktor 0.9
@@ -107,13 +107,13 @@ com.pokemonbattler
 ├── App                   huvudmeny, kopplar ihop alla delar
 ├── PokemonCollection     spelarens samling (unika namn, stridsklara Pokémon, startdata)
 ├── model
-│   ├── Pokemon           namn, typ, HP, speed, 1–4 attacker
+│   ├── Pokemon           namn, typ, HP, speed, 1-4 attacker
 │   ├── Attack            namn, basskada, träffsäkerhet, typ
 │   └── Type              enum: FIRE, WATER, GRASS, ELECTRIC, NORMAL
 ├── battle
 │   ├── Combatant         abstrakt klass: den som styr en Pokémon i strid
-│   ├── HumanCombatant    spelaren – väljer attack via konsolmeny
-│   ├── CpuCombatant      datorn – väljer attack slumpvis
+│   ├── HumanCombatant    spelaren - väljer attack via konsolmeny
+│   ├── CpuCombatant      datorn - väljer attack slumpvis
 │   ├── Battle            turordning, stridslogg och resultat
 │   ├── DamageCalculator  skadeformel, träff/miss, kritiska träffar
 │   ├── TypeChart         typeffektivitetstabell
@@ -150,15 +150,15 @@ Exempel: `Battle` skriver aldrig till fil, `JsonRepository` vet ingenting om
 menyer, och `Pokemon` läser aldrig från konsolen. Därför kan en del bytas ut,
 till exempel JSON mot CSV, utan att resten av programmet påverkas.
 
-### Arv och polymorfism – `Combatant`
+### Arv och polymorfism - `Combatant`
 
 ```
            Combatant (abstrakt)
            ├─ chooseAttack()   abstrakt
            └─ isPlayer()       abstrakt
-               ▲            ▲
-       HumanCombatant    CpuCombatant
-       frågar spelaren   slumpar attack
+               ▲                  ▲
+       HumanCombatant        CpuCombatant
+       frågar spelaren       slumpar attack
 ```
 
 `Battle` känner bara till den abstrakta klassen `Combatant` och anropar
@@ -168,9 +168,9 @@ till exempel JSON mot CSV, utan att resten av programmet påverkas.
 exempel en AI som alltid väljer den mest effektiva attacken, kan läggas till
 som en ny subklass utan att `Battle` behöver ändras.
 
-### Interface – `Repository<T>`
+### Interface - `Repository`
 
-`App` beror på interfacet `Repository<T>` och vet inte att datan sparas som
+`App` beror på interfacet `Repository` och vet inte att datan sparas som
 JSON. `JsonRepository<T>` är generisk och används både för listan med Pokémon
 och för statistiken. Om lagringen skulle bytas till till exempel CSV behövs
 bara en ny implementation. Resten av programmet påverkas inte.
@@ -204,17 +204,6 @@ bytas ut eller testas var för sig, till exempel med ett `Random` med fast frö.
 - **`Optional`** används i stället för `null` när ett värde kan saknas, t.ex. när
   spelaren flyr eller avbryter ett val.
 
-## VG-krav som uppfylls
-
-- [x] **Typeffektivitet** – tabellen ovan, implementerad i `TypeChart`.
-- [x] **JSON som persistensformat** – all lagring sker via Jackson
-  (`data/pokemons.json` och `data/stats.json`).
-- [x] **Kritiska träffar** – chans 1/16, dubbel skada, visas i stridsloggen.
-- [x] **Persistent statistik** mellan sessioner, visas via menyval 10:
-  - totala vinster och förluster
-  - vinst/förlust-ratio per Pokémon
-  - mest använda attack
-  - mest använda Pokémon
 
 ## Felhantering
 
