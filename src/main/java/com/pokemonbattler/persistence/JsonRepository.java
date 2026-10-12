@@ -16,12 +16,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /*
- Generisk JSON-lagring med Jackson (VG-krav). Används både för
+ Används både för
  Pokémon-listan och för statistiken.
-
- - Saknad fil:  standardvärdet returneras.
- - Trasig fil:  filen döps om till *.corrupt-<tid> så att datan inte
-   skrivs över i tysthet, och standardvärdet returneras med en varning.
+ Saknad fil: standardvärdet returneras.
+ Trasig fil: filen döps om till *.corrupt-<tid> så att datan inte
+ skrivs över i tysthet, och standardvärdet returneras med en varning.
  Inget undantag lämnar klassen, så programmet kraschar aldrig på grund av filer.
  */
 public class JsonRepository<T> implements Repository<T> {
