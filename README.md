@@ -204,6 +204,17 @@ bytas ut eller testas var för sig, till exempel med ett `Random` med fast frö.
 - **`Optional`** används i stället för `null` när ett värde kan saknas, t.ex. när
   spelaren flyr eller avbryter ett val.
 
+## VG-krav som uppfylls
+
+- [x] **Typeffektivitet** – tabellen ovan, implementerad i `TypeChart`.
+- [x] **JSON som persistensformat** – all lagring sker via Jackson
+  (`data/pokemons.json` och `data/stats.json`).
+- [x] **Kritiska träffar** – chans 1/16, dubbel skada, visas i stridsloggen.
+- [x] **Persistent statistik** mellan sessioner, visas via menyval 10:
+  - totala vinster och förluster
+  - vinst/förlust-ratio per Pokémon
+  - mest använda attack
+  - mest använda Pokémon
 
 ## Felhantering
 

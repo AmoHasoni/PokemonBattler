@@ -1,0 +1,14 @@
+{
+  "totalWins" : 1,
+  "totalLosses" : 0,
+  "pokemonRecords" : {
+    "hasan" : {
+      "wins" : 1,
+      "losses" : 0,
+      "battles" : 1
+    }
+  },
+  "attackUsage" : {
+    "hasse" : 1
+  }
+}
