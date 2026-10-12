@@ -92,7 +92,7 @@ public class PokemonbattlerService {
     // Returnerar true om det finns en sparad fil att ladda från.
     public boolean savedFileExists() throws IOException {
         return storage.exists();
-
+    }
         // Sparar hela listan till filen.
         public void save () throws IOException {
             storage.save(pokedex);
@@ -102,7 +102,7 @@ public class PokemonbattlerService {
      Läser in listan från filen och ersätter nuvarande data. Kastar IOException
      om filen är trasig, tom eller innehåller null, och då lämnas listan orörd.
      */
-        public void load() throws IOException {
+        public void load () throws IOException {
             List<Pokemon> loaded = storage.load();
             if (storage.lastWarning().isPresent()) {
                 throw new IOException(storage.lastWarning().get());
@@ -120,3 +120,4 @@ public class PokemonbattlerService {
             pokedex.addAll(loaded);
         }
     }
+
