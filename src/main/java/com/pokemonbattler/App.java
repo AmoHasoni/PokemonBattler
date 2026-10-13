@@ -81,16 +81,13 @@ public class App {
                 .add("Ladda från fil", this::loadFromFile)
                 .add("Återställ seed-data", this::resetSeed);
 
-        out.println("+================================+");
-        out.println("|        POKÉMON BATTLER         |");
-        out.println("+================================+");
+
         try {
             boolean running = true;
             while (running) {
-                out.println();
-                out.printf("  Pokémon: %d  |  Stridsredo: %d%n",
-                        collection.size(), collection.getBattleReady().size());
-                menu.print(out, "Avsluta");
+                String status = "Pokémon: " + collection.size()
+                        + "   Stridsredo: " + collection.getBattleReady().size();
+                menu.print(out, "Avsluta", "POKÉMON BATTLER", status);
                 try {
                     running = menu.chooseAndRun(input, "Välj: ");
                 } catch (InvalidPokemonException | InvalidAttackException e) {

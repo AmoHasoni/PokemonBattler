@@ -13,6 +13,8 @@ import java.util.Map;
 public class Menu {
     private record Option(String label, Runnable action) {
     }
+    // ramens inner bredd i tecken
+    private static final int WIDTH = 34;
 
     private final List<Option> options = new ArrayList<>();
 
@@ -30,16 +32,40 @@ public class Menu {
         return this;
     }
 
-    public void print(PrintStream out, String exitLabel) {
+    // Skriver ut menyn i en ram. Rader i header (t.ex. titel och status) centreras överst.
+    public void print(PrintStream out, String exitLabel, String... header) {
+        String thick = "+" + "=".repeat(WIDTH) + "+";
+        String thin = "+" + "-".repeat(WIDTH) + "+";
         out.println();
+        out.println(thick);
+        if (header.length > 0) {
+            for (String line : header) {
+                row(out, center(line));
+            }
+            out.println(thick);
+        }
         for (int i = 0; i < options.size(); i++) {
             if (sections.containsKey(i)) {
-                out.println(" -- " + sections.get(i) + " --");
+                if (i > 0) {
+                    row(out, "");
+                }
+                row(out, " " + sections.get(i).toUpperCase());
             }
-            out.printf("  %2d. %s%n", i + 1, options.get(i).label());
+            row(out, String.format("  %2d. %s", i + 1, options.get(i).label()));
         }
-        out.println();
-        out.printf("  %2d. %s%n", 0, exitLabel);
+        out.println(thin);
+        row(out, String.format("  %2d. %s", 0, exitLabel));
+        out.println(thick);
+    }
+
+    // En rad inuti ramen, utfylld med mellanslag så att högerkanten blir rak.
+    private static void row(PrintStream out, String text) {
+        out.printf("|%-" + WIDTH + "s|%n", text);
+    }
+
+    private static String center(String text) {
+        int left = Math.max(0, (WIDTH - text.length()) / 2);
+        return " ".repeat(left) + text;
     }
 
     // Läser ett val och kör det. Returnerar false om användaren valde 0.
