@@ -36,28 +36,29 @@ inlämning 1: Charmander, Squirtle, Bulbasaur, Pikachu, Eevee och Growlithe.
 ## Meny
 
 ```
-+================================+
-|        POKÉMON BATTLER         |
-+================================+
-
-  Pokémon: 6  |  Stridsredo: 6
-
- -- Pokémon --
-   1. Visa alla Pokémon
-   2. Visa detaljer
-   3. Lägg till Pokémon
-   4. Redigera Pokémon
-   5. Ta bort Pokémon
- -- Strid --
-   6. Starta strid
-   7. Stridsresultat
-   8. Pokémon Center (läk alla)
- -- Fil --
-   9. Spara till fil
-  10. Ladda från fil
-  11. Återställ seed-data
-
-   0. Avsluta
++==================================+
+|         POKÉMON BATTLER          |
+|    Pokémon: 6   Stridsredo: 6    |
++==================================+
+| POKÉMON                          |
+|   1. Visa alla Pokémon           |
+|   2. Visa detaljer               |
+|   3. Lägg till Pokémon           |
+|   4. Redigera Pokémon            |
+|   5. Ta bort Pokémon             |
+|                                  |
+| STRID                            |
+|   6. Starta strid                |
+|   7. Stridsresultat              |
+|   8. Pokémon Center (läk alla)   |
+|                                  |
+| FIL                              |
+|   9. Spara till fil              |
+|  10. Ladda från fil              |
+|  11. Återställ seed-data         |
++----------------------------------+
+|   0. Avsluta                     |
++==================================+
 Välj:
 ```
 
@@ -139,7 +140,8 @@ com.pokemonbattler
 │   └── PokemonRecord     vinster/förluster per Pokémon
 ├── ui
 │   ├── ConsoleInput      all säker inläsning från konsolen
-│   └── Menu              generisk meny
+│   ├── Menu              generisk meny med rubriker och ram
+│   └── Box               ritar ramar runt listor och text
 └── exception
     ├── InvalidPokemonException
     ├── InvalidAttackException
@@ -182,7 +184,7 @@ som en ny subklass utan att `Battle` behöver ändras.
 
 `App` beror på interfacet `Repository` och vet inte att datan sparas som
 JSON. `JsonRepository<T>` är generisk och används både för listan med Pokémon
-och för statistiken. Om lagringen skulle bytas till till exempel CSV behövs
+och för statistiken. Om lagringen skulle bytas till exempel CSV behövs
 bara en ny implementation. Resten av programmet påverkas inte.
 
 `JsonStorage` från inlämning 1, som bara kunde spara Pokémon till

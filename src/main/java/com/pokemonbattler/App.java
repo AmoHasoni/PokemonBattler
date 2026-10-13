@@ -290,8 +290,9 @@ public class App {
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < attacks.size(); i++) {
             lines.add((i + 1) + ". " + attacks.get(i));
-        Box.print(out, "Attacker", lines);
         }
+        Box.print(out, "Attacker", lines);
+
         int index = input.readInt("Vilken attack? (0 för avbryt): ", 0, attacks.size());
         if (index != 0) {
             pokemon.removeAttackAt(index - 1);
