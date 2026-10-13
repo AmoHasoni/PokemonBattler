@@ -60,7 +60,7 @@ public class Menu {
 
     // En rad inuti ramen, utfylld med mellanslag så att högerkanten blir rak.
     private static void row(PrintStream out, String text) {
-        out.printf("|%-" + WIDTH + "s|%n", text);
+        out.println("|" + text + " ".repeat(Math.max(0, WIDTH - text.length())) + "|");
     }
 
     private static String center(String text) {
