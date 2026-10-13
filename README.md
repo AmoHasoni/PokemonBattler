@@ -213,6 +213,8 @@ bytas ut eller testas var för sig, till exempel med ett `Random` med fast frö.
 - **Menyn** är en lista av (text, `Runnable`) i stället för en stor switch-sats.
   Rubriker läggs till med `section()`, så att valen grupperas (Pokémon, Strid, Fil).
   Samma `Menu`-klass används för både huvudmenyn och redigeringsmenyn.
+- **Ramar** ritas av hjälpklassen `Box`, som används för listor, detaljer,
+    statistik och attackvalet i striden. All ritning av ramar sker på ett ställe.
 - **Records** (`AttackResult`, `BattleResult`) används för oföränderliga resultat.
 - **`Optional`** används i stället för `null` när ett värde kan saknas, t.ex. när
   spelaren flyr eller avbryter ett val.
