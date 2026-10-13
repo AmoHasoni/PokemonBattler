@@ -65,24 +65,31 @@ public class App {
 
     public void run() {
         loadAtStartup();
-
         Menu menu = new Menu()
+                .section("Pokémon")
                 .add("Visa alla Pokémon", this::listAll)
                 .add("Visa detaljer", this::showDetails)
                 .add("Lägg till Pokémon", this::addPokemon)
                 .add("Redigera Pokémon", this::editPokemon)
                 .add("Ta bort Pokémon", this::removePokemon)
-                .add("Spara till fil", this::saveToFile)
-                .add("Ladda från fil", this::loadFromFile)
-                .add("Återställ seed-data", this::resetSeed)
+                .section("Strid")
                 .add("Starta strid", this::startBattle)
                 .add("Stridsresultat", this::showStatistics)
-                .add("Pokémon Center (läk alla)", this::healAll);
+                .add("Pokémon Center (läk alla)", this::healAll)
+                .section("Fil")
+                .add("Spara till fil", this::saveToFile)
+                .add("Ladda från fil", this::loadFromFile)
+                .add("Återställ seed-data", this::resetSeed);
 
-        out.println("=== Pokémon Battler ===");
+        out.println("+================================+");
+        out.println("|        POKÉMON BATTLER         |");
+        out.println("+================================+");
         try {
             boolean running = true;
             while (running) {
+                out.println();
+                out.printf("  Pokémon: %d  |  Stridsredo: %d%n",
+                        collection.size(), collection.getBattleReady().size());
                 menu.print(out, "Avsluta");
                 try {
                     running = menu.chooseAndRun(input, "Välj: ");

@@ -1,8 +1,10 @@
 package com.pokemonbattler.ui;
 
 import java.io.PrintStream;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /*
  En generisk textmeny. Varje val är en text plus en Runnable, så menyn
@@ -14,6 +16,15 @@ public class Menu {
 
     private final List<Option> options = new ArrayList<>();
 
+    // Rubriker som skrivs ut före ett visst val (nyckel = valets index).
+    private final Map<Integer, String> sections = new HashMap<>();
+
+    // Nästa val som läggs till hamnar under den här rubriken.
+    public Menu section(String title) {
+        sections.put(options.size(), title);
+        return this;
+    }
+
     public Menu add(String label, Runnable action) {
         options.add(new Option(label, action));
         return this;
@@ -22,9 +33,13 @@ public class Menu {
     public void print(PrintStream out, String exitLabel) {
         out.println();
         for (int i = 0; i < options.size(); i++) {
-            out.println((i + 1) + ". " + options.get(i).label());
+            if (sections.containsKey(i)) {
+                out.println(" -- " + sections.get(i) + " --");
+            }
+            out.printf("  %2d. %s%n", i + 1, options.get(i).label());
         }
-        out.println("0. " + exitLabel);
+        out.println();
+        out.printf("  %2d. %s%n", 0, exitLabel);
     }
 
     // Läser ett val och kör det. Returnerar false om användaren valde 0.
