@@ -189,9 +189,9 @@ public class Pokemon {
 
     // En rad i listan, t.ex. "Charmander  FIRE  HP 39/39  attacker: 1".
     public String formatSummary() {
-        return name + "  " + type + "  HP " + currentHp + "/" + maxHp
-                + "  attacker: " + attacks.size()
-                + (isFainted() ? "  (besegrad)" : "");
+        return String.format("%-12s %-9s HP %3d/%-3d  attacker: %d%s",
+                name, type, currentHp, maxHp, attacks.size(),
+                isFainted() ? "  (besegrad)" : "");
     }
 
     // All info när användaren väljer "Visa detaljer".
