@@ -10,7 +10,7 @@ Kurs: Programmering med Java, grund Inlämning 2.
 
 ## Krav
 
-- Java 17 eller nyare
+- Java 21 eller nyare
 - Maven
 - IntelliJ IDEA (rekommenderas)
 
@@ -27,7 +27,7 @@ Data sparas i mappen `data/`, som skapas vid första körningen:
 - `data/pokemons.json` – din samling, inklusive aktuellt HP
 - `data/stats.json` – stridsstatistik
 
-Samlingen sparas med menyval 6, när du avslutar med 0 och automatiskt efter
+Samlingen sparas med menyval 9, när du avslutar med 0 och automatiskt efter
 varje strid. Statistiken sparas efter varje strid.
 
 Finns ingen sparad fil startar programmet med samma sex Pokémon som i
@@ -36,20 +36,29 @@ inlämning 1: Charmander, Squirtle, Bulbasaur, Pikachu, Eevee och Growlithe.
 ## Meny
 
 ```
-=== Pokémon Battler ===
++================================+
+|        POKÉMON BATTLER         |
++================================+
 
-1. Visa alla Pokémon
-2. Visa detaljer
-3. Lägg till Pokémon
-4. Redigera Pokémon
-5. Ta bort Pokémon
-6. Spara till fil
-7. Ladda från fil
-8. Återställ seed-data
-9. Starta strid
-10. Stridsresultat
-11. Pokémon Center (läk alla)
-0. Avsluta
+  Pokémon: 6  |  Stridsredo: 6
+
+ -- Pokémon --
+   1. Visa alla Pokémon
+   2. Visa detaljer
+   3. Lägg till Pokémon
+   4. Redigera Pokémon
+   5. Ta bort Pokémon
+ -- Strid --
+   6. Starta strid
+   7. Stridsresultat
+   8. Pokémon Center (läk alla)
+ -- Fil --
+   9. Spara till fil
+  10. Ladda från fil
+  11. Återställ seed-data
+
+   0. Avsluta
+Välj:
 ```
 
 Under **4. Redigera Pokémon** finns en undermeny där man kan ändra namn, typ,
@@ -65,9 +74,10 @@ max HP, aktuellt HP och speed, samt lägga till och ta bort attacker (1–4 st).
 - **Träff:** ett slumptal 1–100 måste vara ≤ attackens träffsäkerhet, annars missar attacken.
 - HP minskar med skadan. Vid 0 HP är Pokémon besegrad och kan inte attackera mer.
 - Striden slutar när någon Pokémon har 0 HP, eller när spelaren flyr.
-- Varje runda visas i en stridslogg, och slutresultatet visas, t.ex.
+- Varje runda visas i en stridslogg med en HP-mätare för båda Pokémon,
+  t.ex. `HP  19/38 [##########..........]`. Slutresultatet visas, t.ex.
   `Du vann! Din Charmander besegrade vilda Oddish efter 2 rundor.`
-- Skadan på din Pokémon finns kvar efter striden. Läk den i Pokémon Center (val 11).
+- Skadan på din Pokémon finns kvar efter striden. Läk den i Pokémon Center (val 8).
 
 ### Skadeformel
 
@@ -199,6 +209,7 @@ bytas ut eller testas var för sig, till exempel med ett `Random` med fast frö.
 - **Typtabellen** lagras som en `EnumMap` i stället för en lång if/switch-kedja.
   En ny relation är bara en rad i konstruktorn.
 - **Menyn** är en lista av (text, `Runnable`) i stället för en stor switch-sats.
+  Rubriker läggs till med `section()`, så att valen grupperas (Pokémon, Strid, Fil).
   Samma `Menu`-klass används för både huvudmenyn och redigeringsmenyn.
 - **Records** (`AttackResult`, `BattleResult`) används för oföränderliga resultat.
 - **`Optional`** används i stället för `null` när ett värde kan saknas, t.ex. när
@@ -210,7 +221,7 @@ bytas ut eller testas var för sig, till exempel med ett `Random` med fast frö.
 - [x] **JSON som persistensformat** - all lagring sker via Jackson
   (`data/pokemons.json` och `data/stats.json`).
 - [x] **Kritiska träffar** - chans 1/16, dubbel skada, visas i stridsloggen.
-- [x] **Persistent statistik** mellan sessioner, visas via menyval 10:
+- [x] **Persistent statistik** mellan sessioner, visas via menyval 7:
   - totala vinster och förluster
   - vinst/förlust ratio per Pokémon
   - mest använda attack
