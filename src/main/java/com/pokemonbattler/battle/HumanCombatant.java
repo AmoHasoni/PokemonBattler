@@ -2,9 +2,11 @@ package com.pokemonbattler.battle;
 
 import com.pokemonbattler.model.Attack;
 import com.pokemonbattler.model.Pokemon;
+import com.pokemonbattler.ui.Box;
 import com.pokemonbattler.ui.ConsoleInput;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,11 +24,12 @@ public class HumanCombatant extends Combatant {
     @Override
     public Optional<Attack> chooseAttack(Pokemon opponent) {
         List<Attack> attacks = getPokemon().getAttacks();
-        out.println("Välj attack:");
+        List<String> lines = new ArrayList<>();
         for (int i = 0; i < attacks.size(); i++) {
-            out.println("  " + (i + 1) + ". " + attacks.get(i));
+            lines.add((i + 1) + ". " + attacks.get(i));
         }
-        out.println("  0. Fly från striden");
+        lines.add("0. Fly från striden");
+        Box.print(out, "Välj attack", lines);
         // readInt frågar om vid "abc", -1, 99 osv. så ogiltigt index kan aldrig nå hit.
         int choice = input.readInt("> ", 0, attacks.size());
         if (choice == 0) {

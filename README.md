@@ -233,8 +233,8 @@ Programmet ska aldrig krascha:
 
 - All inmatning går via `ConsoleInput`, som frågar om vid ogiltiga värden
   (`-1`, `99`, `abc`, tom rad).
-- Avbruten inmatning (Ctrl+D / Ctrl+Z) kastar `InputAbortedException`, som
-  fångas i `App`. Datan sparas och programmet avslutas snyggt, även mitt i en strid.
+- Avbruten inmatning (Ctrl+D i IntelliJ, Mac och Linux) kastar `InputAbortedException`, som fångas i `App`. Datan
+  sparas och programmet avslutas snyggt, även mitt i en strid.
 - Strid utan Pokémon, med en Pokémon som har 0 HP eller saknar attacker stoppas
   med ett tydligt meddelande.
 - Saknad JSON-fil ger startdata.

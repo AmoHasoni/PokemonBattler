@@ -17,11 +17,13 @@ import com.pokemonbattler.model.Type;
 import com.pokemonbattler.persistence.JsonRepository;
 import com.pokemonbattler.persistence.Repository;
 import com.pokemonbattler.statistics.Stats;
+import com.pokemonbattler.ui.Box;
 import com.pokemonbattler.ui.ConsoleInput;
 import com.pokemonbattler.ui.Menu;
 
 import java.io.PrintStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -176,12 +178,12 @@ public class App {
             out.println("Du har inga Pokémon.");
             return;
         }
-        printNumbered(collection.getAll());
+        printNumbered("Dina Pokémons", collection.getAll());
     }
 
     private void showDetails() {
         selectPokemon(collection.getAll(), "Vilken vill du se detaljer för? (0 för avbryt): ")
-                .ifPresent(p -> out.println(p.formatDetails()));
+                .ifPresent(p -> Box.print(out, p.getName(), p.formatDetails()));
     }
 
     private void addPokemon() {
@@ -285,8 +287,10 @@ public class App {
             out.println("Inga attacker att ta bort.");
             return;
         }
+        List<String> lines = new ArrayList<>();
         for (int i = 0; i < attacks.size(); i++) {
-            out.println((i + 1) + ". " + attacks.get(i));
+            lines.add((i + 1) + ". " + attacks.get(i));
+        Box.print(out, "Attacker", lines);
         }
         int index = input.readInt("Vilken attack? (0 för avbryt): ", 0, attacks.size());
         if (index != 0) {
@@ -338,24 +342,25 @@ public class App {
     }
 
     private void showStatistics() {
-        out.println(stats.format().stripTrailing());
+        Box.print(out, "Stridsresultat", stats.format());
     }
 
     // ---------- Hjälpmetoder ----------
 
-    private void printNumbered(List<Pokemon> list) {
+    private void printNumbered(String title, List<Pokemon> list) {
+        List<String> lines = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
-            out.println((i + 1) + ". " + list.get(i));
+            lines.add(String.format("%2d. %s", i + 1, list.get(i)));
         }
+        Box.print(out, title, lines);
     }
-
     // Visar en numrerad lista och låter användaren välja. 0 avbryter.
     private Optional<Pokemon> selectPokemon(List<Pokemon> list, String prompt) {
         if (list.isEmpty()) {
             out.println("Du har inga Pokémon.");
             return Optional.empty();
         }
-        printNumbered(list);
+        printNumbered("Välj Pokémon", list);
         int choice = input.readInt(prompt, 0, list.size());
         return choice == 0 ? Optional.empty() : Optional.of(list.get(choice - 1));
     }
