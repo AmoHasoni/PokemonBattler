@@ -30,7 +30,7 @@ Data sparas i mappen `data/`, som skapas vid första körningen:
 Samlingen sparas med menyval 9, när du avslutar med 0 och automatiskt efter
 varje strid. Statistiken sparas efter varje strid.
 
-Finns ingen sparad fil startar programmet med samma sex Pokémon som i
+Finns ingen sparad fil startar programmet med samma sex Pokémons som i
 inlämning 1: Charmander, Squirtle, Bulbasaur, Pikachu, Eevee och Growlithe.
 
 ## Meny
