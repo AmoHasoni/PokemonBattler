@@ -14,7 +14,7 @@ Kurs: Programmering med Java, grund Inlämning 2.
 - Maven
 - IntelliJ IDEA (rekommenderas)
 
-## Köra programmet
+## Kör programmet
 
 ```bash
 mvn compile exec:java
