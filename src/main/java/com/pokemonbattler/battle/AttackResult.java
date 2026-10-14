@@ -6,6 +6,7 @@ package com.pokemonbattler.battle;
  */
 public record AttackResult(boolean hit, int damage, double effectiveness, boolean critical) {
 
+    // Skapar ett resultat för en miss: ingen skada.
     public static AttackResult miss() {
         return new AttackResult(false, 0, TypeChart.NEUTRAL, false);
     }
