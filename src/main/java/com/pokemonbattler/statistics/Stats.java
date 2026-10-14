@@ -25,6 +25,7 @@ public class Stats {
     private Map<String, PokemonRecord> pokemonRecords = new TreeMap<>();
     private Map<String, Integer> attackUsage = new TreeMap<>();
 
+    // Registrerar en strid: vinst/förlust totalt, per Pokémon och vilka attacker spelaren använde.
     public void record(BattleResult result) {
         PokemonRecord rec = pokemonRecords.computeIfAbsent(result.playerPokemon(), k -> new PokemonRecord());
         rec.addBattle();
@@ -38,20 +39,24 @@ public class Stats {
         result.attacksUsed().forEach((attack, count) -> attackUsage.merge(attack, count, Integer::sum));
     }
 
+    // Stämmer om inga strider har registrerats ännu.
     @JsonIgnore
     public boolean isEmpty() {
         return pokemonRecords.isEmpty();
     }
 
+    // Attacken som använts flest gånger, eller tom om inga strider finns.
     public Optional<Map.Entry<String, Integer>> mostUsedAttack() {
         return attackUsage.entrySet().stream().max(Map.Entry.comparingByValue());
     }
 
+    // Pokémon som deltagit i flest strider, eller tom om inga strider finns.
     public Optional<Map.Entry<String, PokemonRecord>> mostUsedPokemon() {
         return pokemonRecords.entrySet().stream()
                 .max((a, b) -> Integer.compare(a.getValue().getBattles(), b.getValue().getBattles()));
     }
 
+    // Bygger texten som visas under Stridsresultat.
     public String format() {
         if (isEmpty()) {
             return "Inga strider har utkämpats ännu.";
@@ -89,6 +94,7 @@ public class Stats {
 
     public Map<String, PokemonRecord> getPokemonRecords() { return pokemonRecords; }
 
+    // Kopierar kartan och tar bort tomma poster från en handredigerad fil.
     public void setPokemonRecords(Map<String, PokemonRecord> pokemonRecords) {
         this.pokemonRecords = pokemonRecords == null ? new TreeMap<>() : new TreeMap<>(pokemonRecords);
         this.pokemonRecords.values().removeIf(Objects::isNull);
@@ -96,6 +102,7 @@ public class Stats {
 
     public Map<String, Integer> getAttackUsage() { return attackUsage; }
 
+    // Kopierar kartan och hoppar över tomma värden. Negativa tal ger exception.
     public void setAttackUsage(Map<String, Integer> attackUsage) {
         this.attackUsage = new TreeMap<>();
         if (attackUsage != null) {
