@@ -5,7 +5,7 @@ package com.pokemonbattler.exception;
   attacknamn eller skada/träffsäkerhet utanför tillåtet intervall.
  */
 public class InvalidAttackException extends RuntimeException {
-    public InvalidAttackException(String message) {
+    public InvalidAttackException(String message) {  // message förklarar vad som var fel, t.ex. "Attacknamn får inte vara tomt."
         super(message);
     }
 }
