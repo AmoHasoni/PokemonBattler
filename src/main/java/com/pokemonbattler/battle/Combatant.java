@@ -16,15 +16,18 @@ public abstract class Combatant {
     private final String displayName;
     private final Pokemon pokemon;
 
+    // protected: Bara subklasserna kan anropa konstruktorn.
     protected Combatant(String displayName, Pokemon pokemon) {
         this.displayName = displayName;
         this.pokemon = pokemon;
     }
 
+    // Namnet som visas i loggen, t.ex. "Din Pikachu" eller "Vilda Vulpix".
     public String getDisplayName() {
         return displayName;
     }
 
+    // Pokémon som den här deltagaren styr.
     public Pokemon getPokemon() {
         return pokemon;
     }
