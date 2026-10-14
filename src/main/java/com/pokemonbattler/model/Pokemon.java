@@ -58,10 +58,12 @@ public class Pokemon {
         return copy;
     }
 
+    // Pokémonens namn.
     public String getName() {
         return name;
     }
 
+    // Sätter namnet. Får inte vara tomt eller längre än MAX_NAME_LENGTH.
     public void setName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new InvalidPokemonException("Namn får inte vara tomt.");
@@ -73,10 +75,12 @@ public class Pokemon {
         this.name = trimmed;
     }
 
+    // Pokémonens typ.
     public Type getType() {
         return type;
     }
 
+    // Sätter typen. null är inte tillåtet.
     public void setType(Type type) {
         if (type == null) {
             throw new InvalidPokemonException("Typ måste anges. Tillåtna: " + Type.options());
@@ -84,6 +88,7 @@ public class Pokemon {
         this.type = type;
     }
 
+    // Max HP.
     public int getMaxHp() {
         return maxHp;
     }
@@ -99,10 +104,12 @@ public class Pokemon {
         }
     }
 
+    // Aktuellt HP (0 betyder besegrad).
     public int getCurrentHp() {
         return currentHp;
     }
 
+    // Sätter aktuellt HP. Måste ligga mellan 0 och max HP.
     public void setCurrentHp(int currentHp) {
         if (currentHp < 0) {
             throw new InvalidPokemonException("Aktuellt HP får inte vara negativt.");
@@ -113,6 +120,7 @@ public class Pokemon {
         this.currentHp = currentHp;
     }
 
+    // Speed avgör vem som attackerar först i striden.
     public int getSpeed() {
         return speed;
     }
@@ -151,6 +159,7 @@ public class Pokemon {
         return List.copyOf(attacks);
     }
 
+    // Ersätter alla attacker (används av Jackson vid inläsning). Måste vara 1–4 st.
     public void setAttacks(List<Attack> newAttacks) {
         if (newAttacks == null || newAttacks.isEmpty()) {
             throw new InvalidPokemonException("En Pokémon måste ha minst " + MIN_ATTACKS + " attack.");
@@ -162,6 +171,7 @@ public class Pokemon {
         attacks.addAll(newAttacks);
     }
 
+    // Lägger till en attack. Högst MAX_ATTACKS (4) attacker.
     public void addAttack(Attack attack) {
         if (attack == null) {
             throw new InvalidPokemonException("Attack får inte vara null.");
@@ -172,6 +182,7 @@ public class Pokemon {
         attacks.add(attack);
     }
 
+    // Tar bort attacken på ett index. Minst en attack måste finnas kvar.
     public void removeAttackAt(int index) {
         if (index < 0 || index >= attacks.size()) {
             throw new InvalidPokemonException("Ogiltigt attackindex.");
@@ -182,6 +193,7 @@ public class Pokemon {
         attacks.remove(index);
     }
 
+    // Antal attacker. Används för att avgöra om Pokémon kan slåss.
     @JsonIgnore   // Hindrar att "attackCount" skrivs in i JSON-filen
     public int getAttackCount() {
         return attacks.size();
@@ -212,6 +224,7 @@ public class Pokemon {
         return sb.toString();
     }
 
+    // Används när en Pokémon skrivs ut, t.ex. i listor.
     @Override
     public String toString() {
         return formatSummary();
