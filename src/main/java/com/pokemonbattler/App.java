@@ -68,10 +68,8 @@ public class App {
                 DATA_DIR.resolve("stats.json"), new TypeReference<>() {}, Stats::new);
         new App(new ConsoleInput(System.in, out), out, pokemonRepo, statsRepo).run();
     }
-    /*
-     Huvudloopen: visar menyn tills användaren väljer 0.
-     Fångar fel så att programmet aldrig kraschar.
-     */
+
+    // Huvudloopen: visar menyn tills användaren väljer 0. Fångar fel så att programmet aldrig kraschar.
     public void run() {
         loadAtStartup();
         Menu menu = new Menu()
