@@ -15,12 +15,14 @@ public class HumanCombatant extends Combatant {
     private final ConsoleInput input;
     private final PrintStream out;
 
+    // Behöver ConsoleInput för att fråga spelaren och PrintStream för att visa attackerna.
     public HumanCombatant(Pokemon pokemon, ConsoleInput input, PrintStream out) {
         super("Din " + pokemon.getName(), pokemon);
         this.input = input;
         this.out = out;
     }
 
+    // Visar attackerna i en ram och låter spelaren välja. Tom Optional betyder att spelaren flyr.
     @Override
     public Optional<Attack> chooseAttack(Pokemon opponent) {
         List<Attack> attacks = getPokemon().getAttacks();
@@ -38,6 +40,7 @@ public class HumanCombatant extends Combatant {
         return Optional.of(attacks.get(choice - 1));
     }
 
+    // Det här är spelaren.
     @Override
     public boolean isPlayer() {
         return true;
