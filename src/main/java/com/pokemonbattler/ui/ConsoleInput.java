@@ -16,11 +16,13 @@ public class ConsoleInput {
     private final Scanner scanner;
     private final PrintStream out;
 
+    // Läser från in (t.ex. System.in) och skriver frågor och felmeddelanden till out.
     public ConsoleInput(InputStream in, PrintStream out) {
         this.scanner = new Scanner(in);
         this.out = out;
     }
 
+    // Läser en rad. Kastar InputAbortedException om inmatningen tar slut (Ctrl+D).
     public String readLine(String prompt) {
         out.print(prompt);
         out.flush();
@@ -46,6 +48,7 @@ public class ConsoleInput {
         }
     }
 
+    // Frågar efter en typ tills användaren skriver en giltig (FIRE, WATER osv...).
     public Type readType(String prompt) {
         while (true) {
             Type type = Type.fromInput(readLine(prompt + " (" + Type.options() + "): "));
