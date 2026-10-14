@@ -30,6 +30,7 @@ public class Attack {
         setType(type);
     }
 
+    // Attackens namn.
     public String getName() {
         return name;
     }
@@ -46,6 +47,7 @@ public class Attack {
         this.name = trimmed;
     }
 
+    // Basskada som används i skadeformeln.
     public int getBaseDamage() {
         return baseDamage;
     }
@@ -59,6 +61,7 @@ public class Attack {
         this.baseDamage = baseDamage;
     }
 
+    // Träffsäkerhet i procent (1–100).
     public int getAccuracy() {
         return accuracy;
     }
@@ -72,6 +75,7 @@ public class Attack {
         this.accuracy = accuracy;
     }
 
+    // Attackens typ, används för typeffektivitet.
     public Type getType() {
         return type;
     }
