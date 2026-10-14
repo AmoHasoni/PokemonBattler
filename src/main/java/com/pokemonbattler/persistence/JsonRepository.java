@@ -37,17 +37,26 @@ public class JsonRepository<T> implements Repository<T> {
     private final Supplier<T> defaultValue;
     private String warning;
 
+    /*
+     file: var datan sparas. typeReference: vilken typ Jackson läser.
+     DefaultValue: vad som returneras om filen saknas eller är trasig.
+     */
     public JsonRepository(Path file, TypeReference<T> typeReference, Supplier<T> defaultValue) {
         this.file = file;
         this.typeReference = typeReference;
         this.defaultValue = defaultValue;
     }
 
+    // Sant om filen finns på disk.
     @Override
     public boolean exists() {
         return Files.exists(file);
     }
 
+    /*
+     Läser filen. Vid saknad eller trasig fil returneras standardvärdet,
+     aldrig ett exception.
+     */
     @Override
     public T load() {
         warning = null;
@@ -71,6 +80,7 @@ public class JsonRepository<T> implements Repository<T> {
         }
     }
 
+    // Sparar via en temporär fil. Returnerar false om det misslyckas.
     @Override
     public boolean save(T data) {
         warning = null;
@@ -91,11 +101,13 @@ public class JsonRepository<T> implements Repository<T> {
         }
     }
 
+    // Varning från senaste load/save, eller tom om allt gick bra.
     @Override
     public Optional<String> lastWarning() {
         return Optional.ofNullable(warning);
     }
 
+    // Döper om en trasig fil till *.corrupt-<tid> så att den inte skrivs över.
     private String backupCorruptFile() {
         String stamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss"));
         Path backup = file.resolveSibling(file.getFileName() + ".corrupt-" + stamp);
@@ -107,6 +119,7 @@ public class JsonRepository<T> implements Repository<T> {
         }
     }
 
+    // Plockar ut första raden av ett felmeddelande så att utskriften blir kort.
     private static String firstLine(Exception e) {
         String msg = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
         int nl = msg.indexOf('\n');
