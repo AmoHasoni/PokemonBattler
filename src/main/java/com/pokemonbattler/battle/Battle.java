@@ -2,8 +2,10 @@ package com.pokemonbattler.battle;
 
 import com.pokemonbattler.model.Attack;
 import com.pokemonbattler.model.Pokemon;
+import com.pokemonbattler.ui.Box;
 
 import java.io.PrintStream;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,9 +38,7 @@ public class Battle {
         int round = 0;
         while (true) {
             round++;
-            log.println();
-            log.println("--- Runda " + round + " ---");
-            printStatus();
+            printStatus(round);
 
             Combatant first = firstToAct();
             Combatant second = (first == player) ? opponent : player;
@@ -101,16 +101,15 @@ public class Battle {
         return true;
     }
 
-    // Skriver ut HP-status för båda Pokémon i början av varje runda.
-    private void printStatus() {
-        log.println(statusLine(player));
-        log.println(statusLine(opponent));
+    // Skriver ut HP-status för båda Pokémon i en ram i början av varje runda.
+    private void printStatus(int round) {
+        Box.print(log, "Runda " + round, List.of(statusLine(player), statusLine(opponent)));
     }
 
     // En statusrad: namn, typ, HP och HP-mätare.
     private static String statusLine(Combatant c) {
         Pokemon p = c.getPokemon();
-        return String.format("  %-22s %-8s HP %3d/%-3d %s",
+        return String.format("%-22s %-8s HP %3d/%-3d %s",
                 c.getDisplayName(), p.getType(), p.getCurrentHp(), p.getMaxHp(), hpBar(p));
     }
 
@@ -125,8 +124,7 @@ public class Battle {
     private BattleResult finish(BattleOutcome outcome, int rounds) {
         BattleResult result = new BattleResult(outcome, player.getPokemon().getName(),
                 opponent.getPokemon().getName(), rounds, attacksUsed);
-        log.println();
-        log.println("*** " + result.summary() + " ***");
+        Box.print(log, "Resultat", List.of(result.summary()));
         return result;
     }
 }
