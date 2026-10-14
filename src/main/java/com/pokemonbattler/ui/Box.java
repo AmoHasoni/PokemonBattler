@@ -10,6 +10,7 @@ import java.util.List;
 public final class Box {
     private static final int MIN_WIDTH = 34;
 
+    // Privat konstruktor: Box har bara statiska metoder och ska inte skapas med new.
     private Box() {
     }
 
@@ -18,6 +19,7 @@ public final class Box {
         print(out, title, text.stripTrailing().lines().toList());
     }
 
+    // Skriver ut en titel och rader i en ram. Bredden anpassas efter längsta raden.
     public static void print(PrintStream out, String title, List<String> lines) {
         int width = MIN_WIDTH;
         for (String line : lines) {
@@ -34,6 +36,7 @@ public final class Box {
         out.println(thick);
     }
 
+    // En rad inuti ramen, utfylld med mellanslag så att högerkanten blir rak.
     private static void row(PrintStream out, int width, String text) {
         out.println("|" + text + " ".repeat(Math.max(0, width - text.length())) + "|");
     }
