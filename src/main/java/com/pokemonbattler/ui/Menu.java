@@ -11,7 +11,7 @@ import java.util.Map;
  behöver inte veta vad valen gör (istället för en stor switch-sats).
  */
 public class Menu {
-    private record Option(String label, Runnable action) {
+    private record Option(String label, Runnable action) { // Ett menyval: texten som visas och koden som körs.
     }
     // ramens inner bredd i tecken
     private static final int WIDTH = 34;
@@ -27,6 +27,7 @@ public class Menu {
         return this;
     }
 
+    // Lägger till ett menyval. Returnerar this så att anrop kan kedjas.
     public Menu add(String label, Runnable action) {
         options.add(new Option(label, action));
         return this;
@@ -63,6 +64,7 @@ public class Menu {
         out.println("|" + text + " ".repeat(Math.max(0, WIDTH - text.length())) + "|");
     }
 
+    // Centrerar en text inom ramens bredd.
     private static String center(String text) {
         int left = Math.max(0, (WIDTH - text.length()) / 2);
         return " ".repeat(left) + text;
