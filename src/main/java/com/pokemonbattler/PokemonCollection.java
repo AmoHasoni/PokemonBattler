@@ -16,9 +16,11 @@ import java.util.Optional;
 public class PokemonCollection {
     private final List<Pokemon> pokemons = new ArrayList<>();
 
+    // Skapar en tom samling.
     public PokemonCollection() {
     }
 
+    // Skapar en samling från en lista, t.ex. inläst från JSON.
     public PokemonCollection(List<Pokemon> initial) {
         if (initial != null) {
             for (Pokemon p : initial) {
@@ -30,6 +32,7 @@ public class PokemonCollection {
         }
     }
 
+    // Lägger till en Pokémon. Namnet måste vara unikt.
     public void add(Pokemon pokemon) {
         if (pokemon == null) {
             throw new InvalidPokemonException("Pokémon får inte vara null.");
@@ -40,6 +43,7 @@ public class PokemonCollection {
         pokemons.add(pokemon);
     }
 
+    // Tar bort en Pokémon. Returnerar true om den fanns.
     public boolean remove(Pokemon pokemon) {
         return pokemons.remove(pokemon);
     }
@@ -53,6 +57,7 @@ public class PokemonCollection {
         pokemon.setName(newName);
     }
 
+    // Söker efter namn. Optional är tom om ingen hittas.
     public Optional<Pokemon> find(String name) {
         if (name == null) {
             return Optional.empty();
@@ -73,14 +78,17 @@ public class PokemonCollection {
                 .toList();
     }
 
+    // Antal Pokémon i samlingen.
     public int size() {
         return pokemons.size();
     }
 
+    // Sant om samlingen saknar Pokémon.
     public boolean isEmpty() {
         return pokemons.isEmpty();
     }
 
+    // Ger alla Pokémon fullt HP (Pokémon Center).
     public void healAll() {
         pokemons.forEach(Pokemon::heal);
     }
@@ -102,6 +110,7 @@ public class PokemonCollection {
         return collection;
     }
 
+    // Hjälpmetod som skapar en startpokémon med en attack.
     private static Pokemon seed(String name, Type type, int hp, int speed, Attack attack) {
         Pokemon p = new Pokemon(name, type, hp, speed);
         p.addAttack(attack);
