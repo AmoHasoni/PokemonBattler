@@ -58,6 +58,7 @@ public class App {
         this.pokemonRepo = pokemonRepo;
         this.statsRepo = statsRepo;
     }
+
     // Startpunkt: kopplar ihop repositories för Pokémon och statistik och startar appen.
     public static void main(String[] args) {
         PrintStream out = System.out;
@@ -329,7 +330,7 @@ public class App {
     // ---------- Strid ----------
 
     /*
-     Menyval: stoppar strid utan strids redo Pokémon,
+     Menyval: stoppar strid utan stridsredo Pokémon,
      låter spelaren välja och kör en strid mot en vild Pokémon.
      */
     private void startBattle() {
