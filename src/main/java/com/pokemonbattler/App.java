@@ -47,6 +47,10 @@ public class App {
     private PokemonCollection collection;
     private Stats stats;
 
+    /*
+     Tar emot alla beroenden utifrån (dependency injection),
+     så att App inte skapar dem själv.
+     */
     public App(ConsoleInput input, PrintStream out,
                Repository<List<Pokemon>> pokemonRepo, Repository<Stats> statsRepo) {
         this.input = input;
@@ -54,7 +58,7 @@ public class App {
         this.pokemonRepo = pokemonRepo;
         this.statsRepo = statsRepo;
     }
-
+    // Startpunkt: kopplar ihop repositories för Pokémon och statistik och startar appen.
     public static void main(String[] args) {
         PrintStream out = System.out;
         Repository<List<Pokemon>> pokemonRepo = new JsonRepository<>(
@@ -64,7 +68,10 @@ public class App {
                 DATA_DIR.resolve("stats.json"), new TypeReference<>() {}, Stats::new);
         new App(new ConsoleInput(System.in, out), out, pokemonRepo, statsRepo).run();
     }
-
+    /*
+     Huvudloopen: visar menyn tills användaren väljer 0.
+     Fångar fel så att programmet aldrig kraschar.
+     */
     public void run() {
         loadAtStartup();
         Menu menu = new Menu()
@@ -112,6 +119,7 @@ public class App {
 
     // ---------- Fil ----------
 
+    // Läser in sparad data vid start, eller startdata om filen saknas eller är trasig.
     private void loadAtStartup() {
         if (!pokemonRepo.exists()) {
             collection = PokemonCollection.starter();
@@ -130,13 +138,16 @@ public class App {
                 out.println("Kunde inte läsa statistiken (" + w + "). Börjar om från noll."));
     }
 
+    // Menyval: sparar allt och bekräftar för användaren.
     private void saveToFile() {
         if (saveAll()) {
             out.println("Sparat till fil.");
         }
     }
 
-    // Sparar både samlingen och statistiken. Returnerar false om något misslyckades.
+    /*
+     Sparar både samlingen och statistiken. Returnerar false om något misslyckades.
+     */
     private boolean saveAll() {
         boolean ok = true;
         if (!pokemonRepo.save(collection.toList())) {
@@ -166,6 +177,7 @@ public class App {
         out.println("Data inläst från fil.");
     }
 
+    // Menyval: ersätter samlingen med de sex startpokémonen.
     private void resetSeed() {
         collection = PokemonCollection.starter();
         out.println("Återställd till seedad data.");
@@ -173,6 +185,7 @@ public class App {
 
     // ---------- Pokémon ----------
 
+    // Menyval: visar alla Pokémon i en ram.
     private void listAll() {
         if (collection.isEmpty()) {
             out.println("Du har inga Pokémon.");
@@ -181,11 +194,13 @@ public class App {
         printNumbered("Dina Pokémons", collection.getAll());
     }
 
+    // Menyval: låter användaren välja en Pokémon och visar all info om den.
     private void showDetails() {
         selectPokemon(collection.getAll(), "Vilken vill du se detaljer för? (0 för avbryt): ")
                 .ifPresent(p -> Box.print(out, p.getName(), p.formatDetails()));
     }
 
+    // Menyval: läser in namn, typ, HP, speed och en första attack och skapar en ny Pokémon.
     private void addPokemon() {
         String name = input.readLine("Namn: ");
         Type type = input.readType("Typ");
@@ -210,6 +225,7 @@ public class App {
         }
     }
 
+    // Menyval: tar bort en vald Pokémon ur samlingen.
     private void removePokemon() {
         Optional<Pokemon> selected = selectPokemon(collection.getAll(),
                 "Vilken vill du ta bort? (0 för avbryt): ");
@@ -221,6 +237,7 @@ public class App {
         out.println("Borttagen: " + selected.get());
     }
 
+    // Menyval: undermeny för att ändra en Pokémons värden och attacker.
     private void editPokemon() {
         Optional<Pokemon> selected = selectPokemon(collection.getAll(),
                 "Vilken vill du redigera? (0 för avbryt): ");
@@ -270,6 +287,7 @@ public class App {
         }
     }
 
+    // Läser in en ny attack. Pokemon kastar exception om den redan har 4 attacker.
     private void addAttack(Pokemon pokemon) {
         String attackName = input.readLine("Attackens namn: ");
         int baseDamage = input.readInt("Basskada (" + Attack.MIN_DAMAGE + "-" + Attack.MAX_DAMAGE + "): ",
@@ -281,6 +299,10 @@ public class App {
         out.println("Attack tillagd.");
     }
 
+    /*
+    Visar attackerna och tar bort den användaren väljer.
+    Minst en attack måste finnas kvar.
+     */
     private void removeAttack(Pokemon pokemon) {
         List<Attack> attacks = pokemon.getAttacks();
         if (attacks.isEmpty()) {
@@ -300,6 +322,7 @@ public class App {
         }
     }
 
+    // Menyval (Pokémon Center): ger alla Pokémon fullt HP.
     private void healAll() {
         collection.healAll();
         out.println("Alla dina Pokémon har fullt HP igen.");
@@ -307,6 +330,10 @@ public class App {
 
     // ---------- Strid ----------
 
+    /*
+     Menyval: stoppar strid utan strids redo Pokémon,
+     låter spelaren välja och kör en strid mot en vild Pokémon.
+     */
     private void startBattle() {
         if (collection.isEmpty()) {
             out.println("Du äger inga Pokémon. Lägg till en först.");
@@ -342,12 +369,14 @@ public class App {
         }
     }
 
+    // Menyval: visar sparad stridsstatistik i en ram.
     private void showStatistics() {
         Box.print(out, "Stridsresultat", stats.format());
     }
 
     // ---------- Hjälpmetoder ----------
 
+    // Skriver ut en numrerad lista med Pokémon i en ram.
     private void printNumbered(String title, List<Pokemon> list) {
         List<String> lines = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
