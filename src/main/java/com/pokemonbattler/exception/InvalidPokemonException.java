@@ -6,7 +6,7 @@ package com.pokemonbattler.exception;
   Är en RuntimeException, så anroparen måste själv komma ihåg att fånga den.
  */
 public class InvalidPokemonException extends RuntimeException {
-    public InvalidPokemonException(String message) {
+    public InvalidPokemonException(String message) {  // message förklarar vad som var fel, t.ex. "Namn får inte vara tomt."
         super(message);
     }
 }
