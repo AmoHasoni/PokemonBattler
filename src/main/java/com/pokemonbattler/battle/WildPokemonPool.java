@@ -16,6 +16,7 @@ public class WildPokemonPool {
     private final List<Pokemon> templates = new ArrayList<>();
     private final Random random;
 
+    // Skapar de sex vilda Pokémon som datorn kan slumpa fram.
     public WildPokemonPool(Random random) {
         this.random = random;
         // HP i samma storleksordning som startdatan, så att striderna blir jämna.
@@ -39,6 +40,7 @@ public class WildPokemonPool {
                 new Attack("Stomp", 25, 100, Type.NORMAL)));
     }
 
+    // Hjälpmetod som skapar en vild Pokémon med sina attacker.
     private static Pokemon create(String name, Type type, int hp, int speed, Attack... attacks) {
         Pokemon p = new Pokemon(name, type, hp, speed);
         for (Attack a : attacks) {
@@ -47,6 +49,7 @@ public class WildPokemonPool {
         return p;
     }
 
+    // Returnerar en slumpad vild Pokémon som en ny kopia med fullt HP.
     public Pokemon randomOpponent() {
         Pokemon copy = templates.get(random.nextInt(templates.size())).copy();
         copy.heal();
