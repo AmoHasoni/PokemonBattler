@@ -16,6 +16,7 @@ public record BattleResult(BattleOutcome outcome,
         attacksUsed = Map.copyOf(attacksUsed);
     }
 
+    // Texten som visas när striden är slut, beroende på utfall.
     public String summary() {
         return switch (outcome) {
             case WIN -> "Du vann! Din " + playerPokemon + " besegrade vilda " + opponentPokemon
