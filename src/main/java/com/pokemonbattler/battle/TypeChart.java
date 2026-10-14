@@ -17,6 +17,7 @@ public class TypeChart {
 
     private final Map<Type, Map<Type, Double>> chart = new EnumMap<>(Type.class);
 
+    // Fyller tabellen med relationerna från uppgiften.
     public TypeChart() {
         set(Type.FIRE, Type.GRASS, SUPER_EFFECTIVE);
         set(Type.WATER, Type.FIRE, SUPER_EFFECTIVE);
@@ -29,6 +30,7 @@ public class TypeChart {
         // NORMAL mot alla, och övriga kombinationer, blir NEUTRAL (1x).
     }
 
+    // Sparar en multiplikator för en kombination av anfallande och försvarande typ.
     private void set(Type attacking, Type defending, double multiplier) {
         chart.computeIfAbsent(attacking, t -> new EnumMap<>(Type.class)).put(defending, multiplier);
     }
