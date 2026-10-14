@@ -76,7 +76,7 @@ max HP, aktuellt HP och speed, samt lägga till och ta bort attacker (1–4 st).
 - HP minskar med skadan. Vid 0 HP är Pokémon besegrad och kan inte attackera mer.
 - Striden slutar när någon Pokémon har 0 HP, eller när spelaren flyr.
 - Varje runda visas i en stridslogg med en HP-mätare för båda Pokémon,
-  t.ex. `HP  19/38 [##########..........]`. Slutresultatet visas, t.ex.
+  t.ex. `HP  19/38 [**********..........]`. Slutresultatet visas, t.ex.
   `Du vann! Din Charmander besegrade vilda Oddish efter 2 rundor.`
 - Skadan på din Pokémon finns kvar efter striden. Läk den i Pokémon Center (val 8).
 

@@ -20,6 +20,7 @@ public class Battle {
     private final PrintStream log;
     private final Map<String, Integer> attacksUsed = new LinkedHashMap<>();
 
+    // Tar emot båda deltagarna, skadekalkylatorn och var loggen ska skrivas.
     public Battle(Combatant player, Combatant opponent, DamageCalculator calculator, PrintStream log) {
         this.player = player;
         this.opponent = opponent;
@@ -27,6 +28,7 @@ public class Battle {
         this.log = log;
     }
 
+    // Kör striden runda för runda tills någon är besegrad eller spelaren flyr.
     public BattleResult run() {
         log.println();
         log.println("=== " + player.getDisplayName() + " mot " + opponent.getDisplayName() + " ===");
@@ -99,23 +101,27 @@ public class Battle {
         return true;
     }
 
+    // Skriver ut HP-status för båda Pokémon i början av varje runda.
     private void printStatus() {
         log.println(statusLine(player));
         log.println(statusLine(opponent));
     }
 
+    // En statusrad: namn, typ, HP och HP-mätare.
     private static String statusLine(Combatant c) {
         Pokemon p = c.getPokemon();
         return String.format("  %-22s %-8s HP %3d/%-3d %s",
                 c.getDisplayName(), p.getType(), p.getCurrentHp(), p.getMaxHp(), hpBar(p));
     }
 
+    // Ritar en HP-mätare med 20 tecken, t.ex. [********..........].
     private static String hpBar(Pokemon p) {
         int width = 20;
         int filled = (int) Math.round((double) p.getCurrentHp() / p.getMaxHp() * width);
-        return "[" + "#".repeat(filled) + ".".repeat(width - filled) + "]";
+        return "[" + "*".repeat(filled) + ".".repeat(width - filled) + "]";
     }
 
+    // Skapar resultatet och skriver ut slutmeddelandet.
     private BattleResult finish(BattleOutcome outcome, int rounds) {
         BattleResult result = new BattleResult(outcome, player.getPokemon().getName(),
                 opponent.getPokemon().getName(), rounds, attacksUsed);
