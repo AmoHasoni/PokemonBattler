@@ -233,8 +233,15 @@ public class App {
             out.println("Avbrutet.");
             return;
         }
-        collection.remove(selected.get());
-        out.println("Borttagen: " + selected.get());
+        Pokemon pokemon = selected.get();
+        Box.print(out, "Ta bort " + pokemon.getName() + "?", pokemon.formatDetails());
+        int answer = input.readInt("Är du säker? (1 = ja, 0 = nej): ", 0, 1);
+        if (answer == 0) {
+            out.println("Avbrutet.");
+            return;
+        }
+        collection.remove(pokemon);
+        confirm(pokemon.getName() + " har tagits bort.");
     }
 
     // Menyval: undermeny för att ändra en Pokémons värden och attacker.
@@ -395,6 +402,11 @@ public class App {
     }
 
     // ---------- Hjälpmetoder ----------
+
+    // Visar ett kort bekräftelsemeddelande i en ram.
+    private void confirm(String message) {
+        Box.print(out, "Klart", List.of(message));
+    }
 
     // Skriver ut en numrerad lista med Pokémon i en ram.
     private void printNumbered(String title, List<Pokemon> list) {
