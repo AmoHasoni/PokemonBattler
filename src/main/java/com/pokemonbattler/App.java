@@ -2,6 +2,7 @@ package com.pokemonbattler;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.pokemonbattler.battle.Battle;
+import com.pokemonbattler.battle.BattleOutcome;
 import com.pokemonbattler.battle.BattleResult;
 import com.pokemonbattler.battle.CpuCombatant;
 import com.pokemonbattler.battle.DamageCalculator;
@@ -330,9 +331,10 @@ public class App {
     // ---------- Strid ----------
 
     /*
-     Menyval: stoppar strid utan stridsredo Pokémon,
-     låter spelaren välja och kör en strid mot en vild Pokémon.
-     */
+ Menyval: stoppar strid utan stridsredo Pokémon,
+ låter spelaren välja och kör en strid mot en vild Pokémon.
+ Efter en vinst kan spelaren fortsätta mot en ny vild Pokémon eller återgå till basen.
+ */
     private void startBattle() {
         if (collection.isEmpty()) {
             out.println("Du äger inga Pokémon. Lägg till en först.");
@@ -352,20 +354,39 @@ public class App {
             out.println("Avbrutet.");
             return;
         }
-        Pokemon wild = wildPool.randomOpponent();
-        out.println("En vild " + wild.getName() + " (" + wild.getType() + ") dyker upp!");
+        Pokemon pokemon = chosen.get();
 
-        Battle battle = new Battle(
-                new HumanCombatant(chosen.get(), input, out),
-                new CpuCombatant(wild, random),
-                calculator, out);
-        try {
-            BattleResult result = battle.run();
-            stats.record(result);
-        } finally {
-            // Sparar efter varje strid, även om den avbryts (t.ex. Ctrl+D).
-            saveAll();
+        // En strid per varv. Loopen fortsätter bara om spelaren vann och vill strida igen.
+        boolean fighting = true;
+        while (fighting) {
+            Pokemon wild = wildPool.randomOpponent();
+            out.println("En vild " + wild.getName() + " (" + wild.getType() + ") dyker upp!");
+
+            Battle battle = new Battle(
+                    new HumanCombatant(pokemon, input, out),
+                    new CpuCombatant(wild, random),
+                    calculator, out);
+            boolean won;
+            try {
+                BattleResult result = battle.run();
+                stats.record(result);
+                won = result.outcome() == BattleOutcome.WIN;
+            } finally {
+                // Sparar efter varje strid, även om den avbryts (t.ex. Ctrl+D).
+                saveAll();
+            }
+            fighting = won && askContinue(pokemon);
         }
+    }
+
+    // Frågar efter en vunnen strid om spelaren vill strida igen. Skadan finns kvar mellan striderna.
+    private boolean askContinue(Pokemon pokemon) {
+        Box.print(out, "Vad vill du göra?", List.of(
+                pokemon.getName() + " har " + pokemon.getCurrentHp() + "/" + pokemon.getMaxHp() + " HP kvar.",
+                "",
+                "1. Fortsätt strida mot en ny vild Pokémon",
+                "0. Återgå till basen"));
+        return input.readInt("Välj: ", 0, 1) == 1;
     }
 
     // Menyval: visar sparad stridsstatistik i en ram.
