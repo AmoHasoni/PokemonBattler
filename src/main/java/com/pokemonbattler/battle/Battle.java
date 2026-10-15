@@ -5,6 +5,7 @@ import com.pokemonbattler.model.Pokemon;
 import com.pokemonbattler.ui.Box;
 
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class Battle {
     // Kör striden runda för runda tills någon är besegrad eller spelaren flyr.
     public BattleResult run() {
         log.println();
-        log.println("=== " + player.getDisplayName() + " mot " + opponent.getDisplayName() + " ===");
+        log.println("=== " + player.getDisplayName() + " VS " + opponent.getDisplayName() + " ===");
 
         int round = 0;
         while (true) {
@@ -78,26 +79,29 @@ public class Battle {
             attacksUsed.merge(attack.getName(), 1, Integer::sum);
         }
 
-        log.println(attacker.getDisplayName() + " använder " + attack.getName() + "!");
         Pokemon target = defender.getPokemon();
         AttackResult result = calculator.calculate(attack, target);
+
+        // Samlar turens händelser och skriver ut dem i en ram.
+        List<String> lines = new ArrayList<>();
         if (!result.hit()) {
-            log.println("  ...men missade!");
-            return true;
+            lines.add("...men missade!");
+        } else {
+            if (result.critical()) {
+                lines.add("Kritisk träff!");
+            }
+            String effect = TypeChart.describe(result.effectiveness());
+            if (!effect.isEmpty()) {
+                lines.add(effect);
+            }
+            int dealt = target.takeDamage(result.damage());
+            lines.add(defender.getDisplayName() + " tar " + dealt + " i skada ("
+                    + target.getCurrentHp() + "/" + target.getMaxHp() + " HP kvar).");
+            if (target.isFainted()) {
+                lines.add(defender.getDisplayName() + " är besegrad!");
+            }
         }
-        if (result.critical()) {
-            log.println("  Kritisk träff!");
-        }
-        String effect = TypeChart.describe(result.effectiveness());
-        if (!effect.isEmpty()) {
-            log.println("  " + effect);
-        }
-        int dealt = target.takeDamage(result.damage());
-        log.println("  " + defender.getDisplayName() + " tar " + dealt + " i skada ("
-                + target.getCurrentHp() + "/" + target.getMaxHp() + " HP kvar).");
-        if (target.isFainted()) {
-            log.println("  " + defender.getDisplayName() + " är besegrad!");
-        }
+        Box.print(log, attacker.getDisplayName() + " använder " + attack.getName() + "!", lines);
         return true;
     }
 
