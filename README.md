@@ -72,6 +72,7 @@ Alla meddelanden (bekräftelser, varningar och fel) visas i ramar.
 
 ## Stridsregler
 
+- Förlorar du med din sista stridsredo Pokémon visas Game over. Läk dem i Pokémon Center (val 8).
 - Spelaren väljer en av sina Pokémon. Bara Pokémon med HP > 0 och minst en attack kan väljas.
 - Datorn slumpar en motståndare ur en pool av sex vilda Pokémon. Motståndaren har alltid fullt HP.
 - **Turordning:** den Pokémon som har högst `speed` attackerar först varje runda.

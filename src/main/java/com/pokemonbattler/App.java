@@ -398,11 +398,10 @@ public class App {
             }
             fighting = won && askContinue(pokemon);
         }
-        // Game over: ingen Pokémon kan slåss längre. Alternativ återgå till centern o läk dem
+        // Game over: ingen Pokémon kan slåss längre. Alternativ återgå till centern och läk dem.
         if (collection.getBattleReady().isEmpty()) {
             message("Game over", "Alla dina Pokémon är besegrade.",
                     "Besök Pokémon Center (val 8) för att läka dem.");
-
         }
     }
 
