@@ -123,11 +123,16 @@ public class Battle {
         return "[" + "*".repeat(filled) + ".".repeat(width - filled) + "]";
     }
 
-    // Skapar resultatet och skriver ut slutmeddelandet.
+    // Skapar resultatet och skriver ut slutmeddelandet med en rubrik efter utfallet.
     private BattleResult finish(BattleOutcome outcome, int rounds) {
         BattleResult result = new BattleResult(outcome, player.getPokemon().getName(),
                 opponent.getPokemon().getName(), rounds, attacksUsed);
-        Box.print(log, "Resultat", List.of(result.summary()));
+        String title = switch (outcome) {
+            case WIN -> "Winner Winner Chicken Dinner ! :)";
+            case LOSS -> "Defeat.. X(";
+            case FLED -> "Flykt lyckades :)";
+        };
+        Box.print(log, title, List.of(result.summary()));
         return result;
     }
 }
