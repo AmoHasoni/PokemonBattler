@@ -108,8 +108,11 @@ public class App {
                     message("Oväntat fel", "Något gick fel: " + e.getMessage(), "Programmet fortsätter.");
                 }
             }
-            saveAll();
-            message("Hejdå! :)", "Din data är sparad. Välkommen tillbaka!");
+            if (saveAll()) {
+                message("Hejdå! :)", "Din data är sparad. Välkommen åter!");
+            } else {
+                message("Hejdå! :)", "Datan kunde inte sparas, se meddelandet ovan.");
+            }
         } catch (InputAbortedException e) {
             message("Avslutar", "Ingen mer indata tillgänglig.", "Datan sparas automatiskt.");
             saveAll();

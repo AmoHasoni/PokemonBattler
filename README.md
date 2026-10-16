@@ -64,6 +64,11 @@ Välj:
 
 Under **4. Redigera Pokémon** finns en undermeny där man kan ändra namn, typ,
 max HP, aktuellt HP och speed, samt lägga till och ta bort attacker (1–4 st).
+Varje ändring bekräftas med gammalt och nytt värde, t.ex. `Namn: Charmander -> Charizard`.
+
+**3. Lägg till Pokémon** och **Lägg till attack** visas som formulär i en ram, och
+**5. Ta bort Pokémon** visar Pokémonen och frågar "Är du säker?" innan den tas bort.
+Alla meddelanden (bekräftelser, varningar och fel) visas i ramar.
 
 ## Stridsregler
 
@@ -75,10 +80,12 @@ max HP, aktuellt HP och speed, samt lägga till och ta bort attacker (1–4 st).
 - **Träff:** ett slumptal 1–100 måste vara ≤ attackens träffsäkerhet, annars missar attacken.
 - HP minskar med skadan. Vid 0 HP är Pokémon besegrad och kan inte attackera mer.
 - Striden slutar när någon Pokémon har 0 HP, eller när spelaren flyr.
-- Varje runda visas i en stridslogg med en HP-mätare för båda Pokémon,
-  t.ex. `HP  19/38 [**********..........]`. Slutresultatet visas, t.ex.
-  `Du vann! Din Charmander besegrade vilda Oddish efter 2 rundor.`
-- Skadan på din Pokémon finns kvar efter striden. Läk den i Pokémon Center (val 8).
+- Varje runda visas i en ram med en HP-mätare för båda Pokémon,
+  t.ex. `HP  19/38 [**********..........]`, och varje attack visas i en egen ram.
+  Slutresultatet visas, t.ex. `Du vann! Din Charmander besegrade vilda Oddish efter 2 rundor.`
+- Efter en vinst kan spelaren välja att möta en ny vild Pokémon med samma Pokémon,
+  eller återgå till basen. Vid förlust eller flykt återgår spelaren direkt.
+- Skadan på din Pokémon finns kvar mellan striderna. Läk den i Pokémon Center (val 8).
 
 ### Skadeformel
 
@@ -168,9 +175,9 @@ till exempel JSON mot CSV, utan att resten av programmet påverkas.
            Combatant (abstrakt)
            ├─ chooseAttack()   abstrakt
            └─ isPlayer()       abstrakt
-               ▲                  ▲
-       HumanCombatant        CpuCombatant
-       frågar spelaren       slumpar attack
+                ▲                 ▲
+        HumanCombatant        CpuCombatant
+        frågar spelaren       slumpar attack
 ```
 
 `Battle` känner bara till den abstrakta klassen `Combatant` och anropar
@@ -213,8 +220,11 @@ bytas ut eller testas var för sig, till exempel med ett `Random` med fast frö.
 - **Menyn** är en lista av (text, `Runnable`) i stället för en stor switch-sats.
   Rubriker läggs till med `section()`, så att valen grupperas (Pokémon, Strid, Fil).
   Samma `Menu`-klass används för både huvudmenyn och redigeringsmenyn.
-- **Ramar** ritas av hjälpklassen `Box`, som används för listor, detaljer,
-    statistik och attackvalet i striden. All ritning av ramar sker på ett ställe.
+- **Ramar** ritas av hjälpklassen `Box`, så all ritning sker på ett ställe.
+  `Box.print` ritar en färdig ruta och radbryter rader som är längre än 70 tecken.
+  `Box.open`, `divider` och `close` ritar formulär där användaren skriver in svar.
+  I `App` används hjälpmetoderna `message` (information, varningar, fel) och
+  `confirm` (bekräftelser), så att alla meddelanden ser likadana ut.
 - **Records** (`AttackResult`, `BattleResult`) används för oföränderliga resultat.
 - **`Optional`** används i stället för `null` när ett värde kan saknas, t.ex. när
   spelaren flyr eller avbryter ett val.
@@ -237,14 +247,15 @@ Programmet ska aldrig krascha:
 
 - All inmatning går via `ConsoleInput`, som frågar om vid ogiltiga värden
   (`-1`, `99`, `abc`, tom rad).
-- Avbruten inmatning (Ctrl+D i IntelliJ, Mac och Linux) kastar `InputAbortedException`, som fångas i `App`. Datan
-  sparas och programmet avslutas snyggt, även mitt i en strid.
+- Avbruten inmatning (Ctrl+D i IntelliJ, Mac och Linux) kastar `InputAbortedException`,
+  som fångas i `App`. Datan sparas och programmet avslutas snyggt, även mitt i en strid.
 - Strid utan Pokémon, med en Pokémon som har 0 HP eller saknar attacker stoppas
   med ett tydligt meddelande.
 - Saknad JSON-fil ger startdata.
 - Korrupt JSON-fil (felaktig syntax eller ogiltiga värden) sparas undan som
   `*.corrupt-<tidpunkt>`, och programmet startar med startdata. Ingen data
-  skrivs över i tysthet.
+  skrivs över i tysthet. Varningen visar en kort orsak, t.ex. "ogiltig JSON" eller
+  "Max HP måste vara mellan 1 och 999", i stället för Jacksons tekniska felmeddelande.
 - Statistik utan tidigare strider visar "Inga strider har utkämpats ännu."
 - Sparandet skriver först till en temporär fil, så en avbruten skrivning lämnar
   ingen trasig fil efter sig.
@@ -254,6 +265,8 @@ Programmet ska aldrig krascha:
 
 - Striderna är alltid en mot en. Det finns inga statuseffekter (gift, sömn osv.).
 - Datorns motståndare väljer attack helt slumpvis, utan strategi.
+- De vilda motståndarna slumpas ur en pool med sex Pokémon, så samma motståndare
+  kan dyka upp flera gånger i rad.
 - Startpokémonen har låg HP (35–55), så de flesta strider avgörs på 1–3 rundor.
 - Flykt räknas som en strid i statistiken för Pokémon, men varken som vinst eller förlust.
 - Statistik lagras per Pokémon-namn. En Pokémon som byter namn börjar om med ny statistik.
