@@ -16,7 +16,7 @@ public abstract class Combatant {
     private final String displayName;
     private final Pokemon pokemon;
 
-    // protected: Bara subklasserna kan anropa konstruktorn.
+    // protected: bara subklasserna kan anropa konstruktorn.
     protected Combatant(String displayName, Pokemon pokemon) {
         this.displayName = displayName;
         this.pokemon = pokemon;

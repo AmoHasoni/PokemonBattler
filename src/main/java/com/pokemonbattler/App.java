@@ -90,7 +90,6 @@ public class App {
                 .add("Ladda från fil", this::loadFromFile)
                 .add("Återställ seed-data", this::resetSeed);
 
-
         try {
             boolean running = true;
             while (running) {

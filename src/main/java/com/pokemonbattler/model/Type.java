@@ -2,7 +2,7 @@ package com.pokemonbattler.model;
 
 /*
 De typer en Pokémon och en Attack kan ha. Delas mellan båda klasserna
- enligt uppgiftens domänmodell (minst fyra typer krävs, vi har fem).
+ enligt uppgiftens domänmodell (minst fyra typer krävs, vi har fem nedan).
  */
 public enum Type {
     FIRE,

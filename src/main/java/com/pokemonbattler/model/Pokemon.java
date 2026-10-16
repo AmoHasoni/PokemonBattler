@@ -34,7 +34,7 @@ public class Pokemon {
     public Pokemon() {
     }
 
-    // Anropar nu konstruktorn nedan med standard-speed.
+    // Anropar konstruktorn nedan med standard-speed.
     public Pokemon(String name, Type type, int maxHp) {
         this(name, type, maxHp, DEFAULT_SPEED);
     }
@@ -125,7 +125,7 @@ public class Pokemon {
         return speed;
     }
 
-    // Samma typ av validering som dina andra setters.
+    // Speed måste vara mellan MIN_SPEED och MAX_SPEED.
     public void setSpeed(int speed) {
         if (speed < MIN_SPEED || speed > MAX_SPEED) {
             throw new InvalidPokemonException("Speed måste vara mellan " + MIN_SPEED + " och " + MAX_SPEED + ".");

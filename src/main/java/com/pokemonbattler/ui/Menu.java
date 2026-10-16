@@ -13,7 +13,7 @@ import java.util.Map;
 public class Menu {
     private record Option(String label, Runnable action) { // Ett menyval: texten som visas och koden som körs.
     }
-    // ramens inner bredd i tecken
+    // Ramens inner bredd i tecken
     private static final int WIDTH = 34;
 
     private final List<Option> options = new ArrayList<>();

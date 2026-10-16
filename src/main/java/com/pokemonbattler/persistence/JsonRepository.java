@@ -16,14 +16,14 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 /*
- Används både för
- Pokémon-listan och för statistiken.
+ Generisk lagring i JSON via Jackson. Används både för Pokémon-listan och för statistiken.
  Saknad fil: standardvärdet returneras.
  Trasig fil: filen döps om till *.corrupt-<tid> så att datan inte
  skrivs över i tysthet, och standardvärdet returneras med en varning.
  Inget undantag lämnar klassen, så programmet kraschar aldrig på grund av filer.
  */
 public class JsonRepository<T> implements Repository<T> {
+
     /*
      INDENT_OUTPUT gör filen läsbar för människor. FAIL_ON_UNKNOWN_PROPERTIES
      är avstängt så att extra fält i filen ignoreras.
@@ -39,7 +39,7 @@ public class JsonRepository<T> implements Repository<T> {
 
     /*
      file: var datan sparas. typeReference: vilken typ Jackson läser.
-     DefaultValue: vad som returneras om filen saknas eller är trasig.
+     defaultValue: vad som returneras om filen saknas eller är trasig.
      */
     public JsonRepository(Path file, TypeReference<T> typeReference, Supplier<T> defaultValue) {
         this.file = file;
