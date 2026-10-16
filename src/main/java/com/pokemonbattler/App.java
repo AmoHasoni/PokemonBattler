@@ -100,16 +100,16 @@ public class App {
                 try {
                     running = menu.chooseAndRun(input, "Välj: ");
                 } catch (InvalidPokemonException | InvalidAttackException e) {
-                    out.println(e.getMessage());
+                    message("Fel", e.getMessage());
                 } catch (InputAbortedException e) {
                     throw e;
                 } catch (RuntimeException e) {
                     // Ett oväntat fel ska aldrig krascha programmet.
-                    out.println("Ett oväntat fel uppstod: " + e.getMessage() + ". Fortsätter.");
+                    message("Oväntat fel", "Något gick fel: " + e.getMessage(), "Programmet fortsätter.");
                 }
             }
             saveAll();
-            out.println("Hejdå! :)");
+            message("Hejdå! :)", "Din data är sparad. Välkommen tillbaka!");
         } catch (InputAbortedException e) {
             message("Avslutar", "Ingen mer indata tillgänglig.", "Datan sparas automatiskt.");
             saveAll();
@@ -122,25 +122,25 @@ public class App {
     private void loadAtStartup() {
         if (!pokemonRepo.exists()) {
             collection = PokemonCollection.starter();
-            out.println("Ingen sparad fil hittades. Fyller med startdata.");
+            message("Välkommen", "Ingen sparad fil hittades.", "Startar med sex startpokémon.");
         } else {
             collection = new PokemonCollection(pokemonRepo.load());
             Optional<String> warning = pokemonRepo.lastWarning();
             if (warning.isPresent()) {
-                out.println("Kunde inte läsa sparad data (" + warning.get() + "). Fyller med startdata.");
+                message("Varning", "Kunde inte läsa sparad data:", warning.get(), "Startar med startdata.");
             } else {
-                out.println("Sparad data inläst.");
+                message("Välkommen tillbaka", "Din sparade samling är inläst (" + collection.size() + " Pokémon).");
             }
         }
         stats = statsRepo.load();
         statsRepo.lastWarning().ifPresent(w ->
-                out.println("Kunde inte läsa statistiken (" + w + "). Börjar om från noll."));
+                message("Varning", "Kunde inte läsa statistiken:", w, "Börjar om från noll."));
     }
 
     // Menyval: sparar allt och bekräftar för användaren.
     private void saveToFile() {
         if (saveAll()) {
-            out.println("Sparat till fil.");
+            confirm("Sparat till fil.");
         }
     }
 
@@ -150,11 +150,11 @@ public class App {
     private boolean saveAll() {
         boolean ok = true;
         if (!pokemonRepo.save(collection.toList())) {
-            out.println("Kunde inte spara: " + pokemonRepo.lastWarning().orElse("okänt fel"));
+            message("Kunde inte spara", pokemonRepo.lastWarning().orElse("okänt fel"));
             ok = false;
         }
         if (!statsRepo.save(stats)) {
-            out.println("Kunde inte spara statistik: " + statsRepo.lastWarning().orElse("okänt fel"));
+            message("Kunde inte spara statistik", statsRepo.lastWarning().orElse("okänt fel"));
             ok = false;
         }
         return ok;
@@ -163,23 +163,23 @@ public class App {
     // Datan i minnet lämnas orörd om filen saknas eller är trasig.
     private void loadFromFile() {
         if (!pokemonRepo.exists()) {
-            out.println("Ingen sparad fil hittades.");
+            message("Ladda från fil", "Ingen sparad fil hittades.");
             return;
         }
         List<Pokemon> loaded = pokemonRepo.load();
         Optional<String> warning = pokemonRepo.lastWarning();
         if (warning.isPresent()) {
-            out.println("Kunde inte läsa filen: " + warning.get());
+            message("Kunde inte läsa filen", warning.get());
             return;
         }
         collection = new PokemonCollection(loaded);
-        out.println("Data inläst från fil.");
+        confirm("Data inläst från fil.");
     }
 
     // Menyval: ersätter samlingen med de sex startpokémonen.
     private void resetSeed() {
         collection = PokemonCollection.starter();
-        out.println("Återställd till seedad data.");
+        confirm("Återställd till startdata med sex Pokémon.");
     }
 
     // ---------- Pokémon ----------
@@ -187,7 +187,7 @@ public class App {
     // Menyval: visar alla Pokémon i en ram.
     private void listAll() {
         if (collection.isEmpty()) {
-            out.println("Du har inga Pokémon.");
+            message("Inga Pokémon", "Du har inga Pokémon.");
             return;
         }
         printNumbered("Dina Pokémons", collection.getAll());
@@ -232,14 +232,14 @@ public class App {
         Optional<Pokemon> selected = selectPokemon(collection.getAll(),
                 "Vilken vill du ta bort? (0 för avbryt): ");
         if (selected.isEmpty()) {
-            out.println("Avbrutet.");
+            message("Avbrutet", "Inget har ändrats.");
             return;
         }
         Pokemon pokemon = selected.get();
         Box.print(out, "Ta bort " + pokemon.getName() + "?", pokemon.formatDetails());
         int answer = input.readInt("Är du säker? (1 = ja, 0 = nej): ", 0, 1);
         if (answer == 0) {
-            out.println("Avbrutet.");
+            message("Avbrutet", "Inget har ändrats.");
             return;
         }
         collection.remove(pokemon);
@@ -251,7 +251,7 @@ public class App {
         Optional<Pokemon> selected = selectPokemon(collection.getAll(),
                 "Vilken vill du redigera? (0 för avbryt): ");
         if (selected.isEmpty()) {
-            out.println("Avbrutet.");
+            message("Avbrutet", "Inget har ändrats.");
             return;
         }
         Pokemon pokemon = selected.get();
@@ -324,7 +324,7 @@ public class App {
     private void removeAttack(Pokemon pokemon) {
         List<Attack> attacks = pokemon.getAttacks();
         if (attacks.isEmpty()) {
-            out.println("Inga attacker att ta bort.");
+            message("Inga attacker", "Det finns inga attacker att ta bort.");
             return;
         }
         List<String> lines = new ArrayList<>();
@@ -344,19 +344,19 @@ public class App {
     // Menyval (Pokémon Center): ger alla Pokémon fullt HP.
     private void healAll() {
         collection.healAll();
-        out.println("Alla dina Pokémon har fullt HP igen.");
+        confirm("Alla dina Pokémon har fullt HP igen.");
     }
 
     // ---------- Strid ----------
 
     /*
- Menyval: stoppar strid utan stridsredo Pokémon,
- låter spelaren välja och kör en strid mot en vild Pokémon.
- Efter en vinst kan spelaren fortsätta mot en ny vild Pokémon eller återgå till basen.
- */
+     Menyval: stoppar strid utan stridsredo Pokémon,
+     låter spelaren välja och kör en strid mot en vild Pokémon.
+     Efter en vinst kan spelaren fortsätta mot en ny vild Pokémon eller återgå till basen.
+     */
     private void startBattle() {
         if (collection.isEmpty()) {
-            out.println("Du äger inga Pokémon. Lägg till en först.");
+            message("Kan inte starta strid", "Du äger inga Pokémon. Lägg till en först.");
             return;
         }
         List<Pokemon> ready = collection.getBattleReady();
@@ -366,11 +366,11 @@ public class App {
             return;
         }
         if (ready.size() < collection.size()) {
-            out.println("(Pokémon med 0 HP eller utan attacker kan inte väljas.)");
+            message("Obs", "Pokémon med 0 HP eller utan attacker kan inte väljas.");
         }
         Optional<Pokemon> chosen = selectPokemon(ready, "Välj din Pokémon (0 för avbryt): ");
         if (chosen.isEmpty()) {
-            out.println("Avbrutet.");
+            message("Avbrutet", "Inget har ändrats.");
             return;
         }
         Pokemon pokemon = chosen.get();
@@ -380,6 +380,7 @@ public class App {
         while (fighting) {
             Pokemon wild = wildPool.randomOpponent();
             message("En vild Pokémon dyker upp!", wild.getName() + " (" + wild.getType() + ")");
+
             Battle battle = new Battle(
                     new HumanCombatant(pokemon, input, out),
                     new CpuCombatant(wild, random),
@@ -418,6 +419,7 @@ public class App {
     private void message(String title, String... lines) {
         Box.print(out, title, List.of(lines));
     }
+
     // Visar ett kort bekräftelsemeddelande i en ram.
     private void confirm(String message) {
         Box.print(out, "Klart", List.of(message));
@@ -431,6 +433,7 @@ public class App {
         }
         Box.print(out, title, lines);
     }
+
     // Visar en numrerad lista och låter användaren välja. 0 avbryter.
     private Optional<Pokemon> selectPokemon(List<Pokemon> list, String prompt) {
         if (list.isEmpty()) {
