@@ -286,15 +286,16 @@ public class App {
 
         boolean editing = true;
         while (editing) {
-            out.println();
-            out.println("Redigerar: " + pokemon);
-            editMenu.print(out, "Klar");
+            editMenu.print(out, "Klar", "REDIGERAR " + pokemon.getName().toUpperCase(),
+                    pokemon.getType() + "   HP " + pokemon.getCurrentHp() + "/" + pokemon.getMaxHp()
+                            + "   SPD " + pokemon.getSpeed());
             try {
                 editing = editMenu.chooseAndRun(input, "Val: ");
             } catch (InvalidPokemonException | InvalidAttackException e) {
-                out.println(e.getMessage());
+                Box.print(out, "Kunde inte ändra", List.of(e.getMessage()));
             }
         }
+        Box.print(out, pokemon.getName() + " är sparad", pokemon.formatDetails());
     }
 
     // Läser in en ny attack. Pokemon kastar exception om den redan har 4 attacker.
