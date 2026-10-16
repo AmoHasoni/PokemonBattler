@@ -33,8 +33,7 @@ public class Battle {
 
     // Kör striden runda för runda tills någon är besegrad eller spelaren flyr.
     public BattleResult run() {
-        log.println();
-        log.println("=== " + player.getDisplayName() + " VS " + opponent.getDisplayName() + " ===");
+        Box.print(log, "Strid", List.of(player.getDisplayName() + " VS " + opponent.getDisplayName()));
 
         int round = 0;
         while (true) {
@@ -71,7 +70,7 @@ public class Battle {
     private boolean takeTurn(Combatant attacker, Combatant defender) {
         Optional<Attack> choice = attacker.chooseAttack(defender.getPokemon());
         if (choice.isEmpty()) {
-            log.println(attacker.getDisplayName() + " flyr från striden!");
+            Box.print(log, "Flykt", List.of(attacker.getDisplayName() + " flyr från striden!"));
             return false;
         }
         Attack attack = choice.get();

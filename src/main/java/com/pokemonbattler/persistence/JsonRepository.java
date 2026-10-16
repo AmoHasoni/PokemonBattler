@@ -71,7 +71,7 @@ public class JsonRepository<T> implements Repository<T> {
             return data;
         } catch (JacksonException | RuntimeException e) {
             // Ogiltig JSON, eller värden som Pokemon/Attack vägrar ta emot i sina setters.
-            warning = "filen " + file.getFileName() + " är trasig: " + firstLine(e) + ". "
+            warning = "filen " + file.getFileName() + " är trasig (" + reason(e) + "). "
                     + backupCorruptFile();
             return defaultValue.get();
         } catch (IOException e) {
@@ -117,6 +117,25 @@ public class JsonRepository<T> implements Repository<T> {
         } catch (IOException e) {
             return "Kunde inte säkerhetskopiera filen.";
         }
+    }
+
+    /*
+ Ger en kort, begriplig förklaring i stället för Jacksons långa tekniska text.
+ Om en setter i Pokemon/Attack/Stats vägrade ett värde används dess eget meddelande,
+ t.ex. "Max HP måste vara mellan 1 och 999.". Annars är det felaktig JSON-syntax.
+ */
+    private static String reason(Exception e) {
+        Throwable cause = e;
+        while (cause != null) {
+            if (cause instanceof RuntimeException && !(cause instanceof JacksonException)
+                    && cause.getMessage() != null) {
+                String message = cause.getMessage();
+                // Tar bort en avslutande punkt, eftersom texten hamnar inom parentes.
+                return message.endsWith(".") ? message.substring(0, message.length() - 1) : message;
+            }
+            cause = cause.getCause();
+        }
+        return "ogiltig JSON";
     }
 
     // Plockar ut första raden av ett felmeddelande så att utskriften blir kort.

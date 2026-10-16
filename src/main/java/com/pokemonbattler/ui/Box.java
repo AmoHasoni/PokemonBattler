@@ -1,6 +1,9 @@
 package com.pokemonbattler.ui;
 
 import java.io.PrintStream;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.List;
 
 /*
@@ -9,6 +12,7 @@ import java.util.List;
  */
 public final class Box {
     private static final int MIN_WIDTH = 34;
+    private static final int MAX_LINE = 70;
 
     // Privat konstruktor: Box har bara statiska metoder och ska inte skapas med new.
     private Box() {
@@ -20,7 +24,8 @@ public final class Box {
     }
 
     // Skriver ut en titel och rader i en ram. Bredden anpassas efter längsta raden.
-    public static void print(PrintStream out, String title, List<String> lines) {
+    public static void print(PrintStream out, String title, List<String> text) {
+        List<String> lines = wrap(text);
         int width = MIN_WIDTH;
         for (String line : lines) {
             width = Math.max(width, line.length() + 2);
@@ -54,6 +59,23 @@ public final class Box {
         out.println("+" + "=".repeat(MIN_WIDTH) + "+");
     }
 
+    // Delar upp rader som är längre än MAX_LINE vid ett mellanslag, så att ramen inte blir för bred.
+    private static List<String> wrap(List<String> text) {
+        List<String> result = new ArrayList<>();
+        for (String line : text) {
+            String rest = line;
+            while (rest.length() > MAX_LINE) {
+                int cut = rest.lastIndexOf(' ', MAX_LINE);
+                if (cut <= 0) {
+                    cut = MAX_LINE;
+                }
+                result.add(rest.substring(0, cut));
+                rest = rest.substring(cut).strip();
+            }
+            result.add(rest);
+        }
+        return result;
+    }
 
     // En rad inuti ramen, utfylld med mellanslag så att högerkanten blir rak.
     private static void row(PrintStream out, int width, String text) {

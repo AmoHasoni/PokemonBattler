@@ -111,8 +111,7 @@ public class App {
             saveAll();
             out.println("Hejdå! :)");
         } catch (InputAbortedException e) {
-            out.println();
-            out.println("Ingen mer indata tillgänglig. Avslutar och sparar automatiskt...");
+            message("Avslutar", "Ingen mer indata tillgänglig.", "Datan sparas automatiskt.");
             saveAll();
         }
     }
@@ -336,8 +335,9 @@ public class App {
 
         int index = input.readInt("Vilken attack? (0 för avbryt): ", 0, attacks.size());
         if (index != 0) {
+            String removed = attacks.get(index - 1).getName();
             pokemon.removeAttackAt(index - 1);
-            out.println("Attack borttagen.");
+            confirm(removed + " har tagits bort.");
         }
     }
 
@@ -361,8 +361,8 @@ public class App {
         }
         List<Pokemon> ready = collection.getBattleReady();
         if (ready.isEmpty()) {
-            out.println("Ingen av dina Pokémon kan slåss (0 HP eller inga attacker).");
-            out.println("Besök Pokémon Center eller lägg till en attack.");
+            message("Kan inte starta strid", "Ingen av dina Pokémon kan slåss (0 HP eller inga attacker).",
+                    "Besök Pokémon Center eller lägg till en attack.");
             return;
         }
         if (ready.size() < collection.size()) {
@@ -379,8 +379,7 @@ public class App {
         boolean fighting = true;
         while (fighting) {
             Pokemon wild = wildPool.randomOpponent();
-            out.println("En vild " + wild.getName() + " (" + wild.getType() + ") dyker upp!");
-
+            message("En vild Pokémon dyker upp!", wild.getName() + " (" + wild.getType() + ")");
             Battle battle = new Battle(
                     new HumanCombatant(pokemon, input, out),
                     new CpuCombatant(wild, random),
@@ -415,6 +414,10 @@ public class App {
 
     // ---------- Hjälpmetoder ----------
 
+    // Visar ett meddelande i en ram, t.ex. information, en varning eller ett fel.
+    private void message(String title, String... lines) {
+        Box.print(out, title, List.of(lines));
+    }
     // Visar ett kort bekräftelsemeddelande i en ram.
     private void confirm(String message) {
         Box.print(out, "Klart", List.of(message));
@@ -431,7 +434,7 @@ public class App {
     // Visar en numrerad lista och låter användaren välja. 0 avbryter.
     private Optional<Pokemon> selectPokemon(List<Pokemon> list, String prompt) {
         if (list.isEmpty()) {
-            out.println("Du har inga Pokémon.");
+            message("Inga Pokémon", "Du har inga Pokémon.");
             return Optional.empty();
         }
         printNumbered("Välj Pokémon", list);
