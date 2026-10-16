@@ -7,7 +7,6 @@ import java.util.Optional;
 
 /*
  En deltagare i en strid: den som styr en Pokémon.
-
  Detta är programmets centrala polymorfism. Battle vet inte om det är
  en människa eller datorn som väljer attack; den anropar bara
  chooseAttack(). HumanCombatant frågar via konsolen, CpuCombatant slumpar.
