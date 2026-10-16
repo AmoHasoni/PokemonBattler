@@ -286,7 +286,9 @@ public class App {
                     pokemon.setSpeed(input.readInt("Ny speed (" + Pokemon.MIN_SPEED + "-" + Pokemon.MAX_SPEED + "): ",
                             Pokemon.MIN_SPEED, Pokemon.MAX_SPEED));
                     confirm("Speed: " + before + " -> " + pokemon.getSpeed());
-                });
+                })
+                .add("Lägg till attack", () -> addAttack(pokemon))
+                .add("Ta bort attack", () -> removeAttack(pokemon));
 
         boolean editing = true;
         while (editing) {
