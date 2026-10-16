@@ -149,7 +149,7 @@ public class Pokemon {
         return dealt;
     }
 
-    // Återställer HP till max (Pokémon Menyn).
+    // Återställer HP till max (Pokémon Center).
     public void heal() {
         currentHp = maxHp;
     }
@@ -187,7 +187,7 @@ public class Pokemon {
         if (index < 0 || index >= attacks.size()) {
             throw new InvalidPokemonException("Ogiltigt attackindex.");
         }
-        if (attacks.size() <= MIN_ATTACKS) {
+        if (attacks.size() == MIN_ATTACKS) {
             throw new InvalidPokemonException("En Pokémon måste ha minst " + MIN_ATTACKS + " attack.");
         }
         attacks.remove(index);

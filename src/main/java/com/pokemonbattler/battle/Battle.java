@@ -128,7 +128,7 @@ public class Battle {
         BattleResult result = new BattleResult(outcome, player.getPokemon().getName(),
                 opponent.getPokemon().getName(), rounds, attacksUsed);
         String title = switch (outcome) {
-            case WIN -> "Winner Winner Chicken Dinner ! :)";
+            case WIN -> "Winner Winner Chicken Dinner! XD";
             case LOSS -> "Defeat.. X(";
             case FLED -> "Flykt lyckades :)";
         };
