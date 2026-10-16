@@ -35,6 +35,25 @@ public final class Box {
         }
         out.println(thick);
     }
+    // Början på ett formulär: övre kant, titel och avdelare. Frågorna under skrivs av anroparen.
+    public static void open(PrintStream out, String title) {
+        out.println();
+        out.println("+" + "=".repeat(MIN_WIDTH) + "+");
+        row(out, MIN_WIDTH, " " + title.toUpperCase());
+        out.println("+" + "-".repeat(MIN_WIDTH) + "+");
+    }
+
+    // En avdelare med rubrik inne i ett formulär, t.ex. +-- Första attacken -----+
+    public static void divider(PrintStream out, String label) {
+        String start = "+-- " + label + " ";
+        out.println(start + "-".repeat(Math.max(0, MIN_WIDTH + 1 - start.length())) + "+");
+    }
+
+    // Avslutar ett formulär med en nedre kant.
+    public static void close(PrintStream out) {
+        out.println("+" + "=".repeat(MIN_WIDTH) + "+");
+    }
+
 
     // En rad inuti ramen, utfylld med mellanslag så att högerkanten blir rak.
     private static void row(PrintStream out, int width, String text) {

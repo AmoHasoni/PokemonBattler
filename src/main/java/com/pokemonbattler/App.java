@@ -202,26 +202,29 @@ public class App {
 
     // Menyval: läser in namn, typ, HP, speed och en första attack och skapar en ny Pokémon.
     private void addPokemon() {
-        String name = input.readLine("Namn: ");
-        Type type = input.readType("Typ");
-        int maxHp = input.readInt("Max HP (" + Pokemon.MIN_HP + "-" + Pokemon.MAX_HP + "): ",
+        Box.open(out, "Lägg till Pokémon");
+        String name = input.readLine("| Namn: ");
+        Type type = input.readType("| Typ");
+        int maxHp = input.readInt("| Max HP (" + Pokemon.MIN_HP + "-" + Pokemon.MAX_HP + "): ",
                 Pokemon.MIN_HP, Pokemon.MAX_HP);
-        int speed = input.readInt("Speed (" + Pokemon.MIN_SPEED + "-" + Pokemon.MAX_SPEED + "): ",
+        int speed = input.readInt("| Speed (" + Pokemon.MIN_SPEED + "-" + Pokemon.MAX_SPEED + "): ",
                 Pokemon.MIN_SPEED, Pokemon.MAX_SPEED);
-        String attackName = input.readLine("Attackens namn: ");
-        int baseDamage = input.readInt("Basskada (" + Attack.MIN_DAMAGE + "-" + Attack.MAX_DAMAGE + "): ",
+        Box.divider(out, "Första attacken");
+        String attackName = input.readLine("| Namn: ");
+        int baseDamage = input.readInt("| Basskada (" + Attack.MIN_DAMAGE + "-" + Attack.MAX_DAMAGE + "): ",
                 Attack.MIN_DAMAGE, Attack.MAX_DAMAGE);
-        int accuracy = input.readInt("Träffsäkerhet (" + Attack.MIN_ACCURACY + "-" + Attack.MAX_ACCURACY + "): ",
+        int accuracy = input.readInt("| Träffsäkerhet (" + Attack.MIN_ACCURACY + "-" + Attack.MAX_ACCURACY + "): ",
                 Attack.MIN_ACCURACY, Attack.MAX_ACCURACY);
+        Box.close(out);
 
         // Pokemon och Attack kastar exceptions vid ogiltig data, t.ex. tomt namn.
         try {
             Pokemon pokemon = new Pokemon(name, type, maxHp, speed);
             pokemon.addAttack(new Attack(attackName, baseDamage, accuracy, type));
             collection.add(pokemon);
-            out.println("Tillagd: " + pokemon);
+            Box.print(out, pokemon.getName() + " har lagts till!", pokemon.formatDetails());
         } catch (InvalidPokemonException | InvalidAttackException e) {
-            out.println("Kunde inte lägga till Pokémon: " + e.getMessage());
+            Box.print(out, "Kunde inte lägga till Pokémon", List.of(e.getMessage()));
         }
     }
 
@@ -296,14 +299,16 @@ public class App {
 
     // Läser in en ny attack. Pokemon kastar exception om den redan har 4 attacker.
     private void addAttack(Pokemon pokemon) {
-        String attackName = input.readLine("Attackens namn: ");
-        int baseDamage = input.readInt("Basskada (" + Attack.MIN_DAMAGE + "-" + Attack.MAX_DAMAGE + "): ",
+        Box.open(out, "Ny attack för " + pokemon.getName());
+        String attackName = input.readLine("| Namn: ");
+        int baseDamage = input.readInt("| Basskada (" + Attack.MIN_DAMAGE + "-" + Attack.MAX_DAMAGE + "): ",
                 Attack.MIN_DAMAGE, Attack.MAX_DAMAGE);
-        int accuracy = input.readInt("Träffsäkerhet (" + Attack.MIN_ACCURACY + "-" + Attack.MAX_ACCURACY + "): ",
+        int accuracy = input.readInt("| Träffsäkerhet (" + Attack.MIN_ACCURACY + "-" + Attack.MAX_ACCURACY + "): ",
                 Attack.MIN_ACCURACY, Attack.MAX_ACCURACY);
-        Type type = input.readType("Attacktyp");
+        Type type = input.readType("| Attacktyp");
+        Box.close(out);
         pokemon.addAttack(new Attack(attackName, baseDamage, accuracy, type));
-        out.println("Attack tillagd.");
+        confirm(attackName + " har lagts till.");
     }
 
     /*
