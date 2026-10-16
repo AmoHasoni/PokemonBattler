@@ -149,7 +149,7 @@ public class Pokemon {
         return dealt;
     }
 
-    // Återställer HP till max (Pokémon Center).
+    // Återställer HP till max (Pokémon Menyn).
     public void heal() {
         currentHp = maxHp;
     }
