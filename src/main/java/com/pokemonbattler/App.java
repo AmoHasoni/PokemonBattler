@@ -257,32 +257,36 @@ public class App {
         }
         Pokemon pokemon = selected.get();
 
+        // Varje ändring sparar det gamla värdet först, så att bekräftelsen kan visa före -> efter.
         Menu editMenu = new Menu()
                 .add("Ändra namn", () -> {
+                    String before = pokemon.getName();
                     collection.rename(pokemon, input.readLine("Nytt namn: "));
-                    out.println("Namn uppdaterat.");
+                    confirm("Namn: " + before + " -> " + pokemon.getName());
                 })
                 .add("Ändra typ", () -> {
+                    Type before = pokemon.getType();
                     pokemon.setType(input.readType("Typ"));
-                    out.println("Typ uppdaterad.");
+                    confirm("Typ: " + before + " -> " + pokemon.getType());
                 })
                 .add("Ändra max HP", () -> {
+                    int before = pokemon.getMaxHp();
                     pokemon.setMaxHp(input.readInt("Nytt max HP (" + Pokemon.MIN_HP + "-" + Pokemon.MAX_HP + "): ",
                             Pokemon.MIN_HP, Pokemon.MAX_HP));
-                    out.println("Max HP uppdaterat.");
+                    confirm("Max HP: " + before + " -> " + pokemon.getMaxHp());
                 })
                 .add("Ändra aktuellt HP", () -> {
+                    int before = pokemon.getCurrentHp();
                     pokemon.setCurrentHp(input.readInt("Nytt aktuellt HP (0-" + pokemon.getMaxHp() + "): ",
                             0, pokemon.getMaxHp()));
-                    out.println("Aktuellt HP uppdaterat.");
+                    confirm("Aktuellt HP: " + before + " -> " + pokemon.getCurrentHp());
                 })
                 .add("Ändra speed", () -> {
+                    int before = pokemon.getSpeed();
                     pokemon.setSpeed(input.readInt("Ny speed (" + Pokemon.MIN_SPEED + "-" + Pokemon.MAX_SPEED + "): ",
                             Pokemon.MIN_SPEED, Pokemon.MAX_SPEED));
-                    out.println("Speed uppdaterad.");
-                })
-                .add("Lägg till attack", () -> addAttack(pokemon))
-                .add("Ta bort attack", () -> removeAttack(pokemon));
+                    confirm("Speed: " + before + " -> " + pokemon.getSpeed());
+                });
 
         boolean editing = true;
         while (editing) {
