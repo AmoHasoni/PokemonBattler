@@ -1,0 +1,57 @@
+package com.pokemonbattler.persistence;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import javax.sql.DataSource;
+
+/*
+ Samlar anslutningarna till båda databaserna på ett ställe.
+ PostgreSQL nås via en HikariCP-pool, MongoDB via en MongoClient.
+ Båda skapas en gång och återanvänds under hela programmets körning.
+ */
+public final class Database {
+
+    private static final String PG_URL = "jdbc:postgresql://localhost:5432/pokemonbattler";
+    private static final String PG_USER = "trainer";
+    private static final String PG_PASSWORD = "pikachu123";
+
+    private static final String MONGO_URL = "mongodb://localhost:27017";
+    private static final String MONGO_DB = "pokemonbattler";
+
+    private static final HikariDataSource dataSource;
+    private static final MongoClient mongoClient;
+
+    static {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(PG_URL);
+        config.setUsername(PG_USER);
+        config.setPassword(PG_PASSWORD);
+        config.setMaximumPoolSize(5);
+        dataSource = new HikariDataSource(config);
+
+        mongoClient = MongoClients.create(MONGO_URL);
+    }
+
+    private Database() {
+    }
+
+    // Poolen som alla SQL-anrop lånar anslutningar från.
+    public static DataSource dataSource() {
+        return dataSource;
+    }
+
+    // Databasen i MongoDB där stridsloggarna sparas.
+    public static MongoDatabase mongo() {
+        return mongoClient.getDatabase(MONGO_DB);
+    }
+
+    // Stänger poolen och Mongo-klienten när programmet avslutas.
+    public static void close() {
+        dataSource.close();
+        mongoClient.close();
+    }
+}

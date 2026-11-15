@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: pokemon-postgres
+    environment:
+      POSTGRES_DB: pokemonbattler
+      POSTGRES_USER: trainer
+      POSTGRES_PASSWORD: pikachu123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:7
+    container_name: pokemon-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  postgres-data:
+  mongo-data:
