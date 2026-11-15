@@ -17,7 +17,8 @@ public final class Database {
 
     private static final String PG_URL = "jdbc:postgresql://localhost:5432/pokemonbattler";
     private static final String PG_USER = "trainer";
-    private static final String PG_PASSWORD = "pikachu123";
+    private static final String PG_PASSWORD =
+            System.getenv().getOrDefault("PG_PASSWORD", "pikachu123");
 
     private static final String MONGO_URL = "mongodb://localhost:27017";
     private static final String MONGO_DB = "pokemonbattler";
