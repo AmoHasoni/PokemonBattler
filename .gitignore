@@ -40,3 +40,6 @@ build/
 
 ### Pokemon Battler sparfiler ###
 data/
+
+### Lösenord och lokala inställningar ###
+.env
