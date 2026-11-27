@@ -17,8 +17,8 @@ public final class Database {
 
     private static final String PG_URL = "jdbc:postgresql://localhost:5432/pokemonbattler";
     private static final String PG_USER = "trainer";
-    private static final String PG_PASSWORD =
-            System.getenv().getOrDefault("PG_PASSWORD", "pikachu123");
+    // Lösenordet läses från miljövariabeln PG_PASSWORD och ska aldrig finnas i koden.
+    private static final String PG_PASSWORD = requireEnv("PG_PASSWORD");
 
     private static final String MONGO_URL = "mongodb://localhost:27017";
     private static final String MONGO_DB = "pokemonbattler";
@@ -38,6 +38,15 @@ public final class Database {
     }
 
     private Database() {
+    }
+
+    // Stoppar programmet med ett tydligt fel om miljövariabeln saknas.
+    private static String requireEnv(String name) {
+        String value = System.getenv(name);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("Miljövariabeln " + name + " är inte satt.");
+        }
+        return value;
     }
 
     // Poolen som alla SQL-anrop lånar anslutningar från.
