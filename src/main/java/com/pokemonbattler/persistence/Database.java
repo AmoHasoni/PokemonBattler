@@ -20,7 +20,8 @@ public final class Database {
     // Lösenordet läses från miljövariabeln PG_PASSWORD och ska aldrig finnas i koden.
     private static final String PG_PASSWORD = requireEnv("PG_PASSWORD");
 
-    private static final String MONGO_URL = "mongodb://localhost:27017";
+    // Ger upp efter 2 sekunder i stället för 30 om MongoDB inte är igång.
+    private static final String MONGO_URL = "mongodb://localhost:27017/?serverSelectionTimeoutMS=2000";
     private static final String MONGO_DB = "pokemonbattler";
 
     private static final HikariDataSource dataSource;

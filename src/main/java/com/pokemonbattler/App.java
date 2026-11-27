@@ -15,12 +15,14 @@ import com.pokemonbattler.exception.InvalidPokemonException;
 import com.pokemonbattler.model.Attack;
 import com.pokemonbattler.model.Pokemon;
 import com.pokemonbattler.model.Type;
+import com.pokemonbattler.persistence.BattleLogRepository;
 import com.pokemonbattler.persistence.JsonRepository;
 import com.pokemonbattler.persistence.Repository;
 import com.pokemonbattler.statistics.Stats;
 import com.pokemonbattler.ui.Box;
 import com.pokemonbattler.ui.ConsoleInput;
 import com.pokemonbattler.ui.Menu;
+import org.bson.Document;
 
 import java.io.PrintStream;
 import java.nio.file.Path;
@@ -41,6 +43,7 @@ public class App {
     private final PrintStream out;
     private final Repository<List<Pokemon>> pokemonRepo;
     private final Repository<Stats> statsRepo;
+    private final BattleLogRepository battleLogs;   // null om databaserna inte nås
     private final Random random = new Random();
     private final DamageCalculator calculator = new DamageCalculator(new TypeChart(), random);
     private final WildPokemonPool wildPool = new WildPokemonPool(random);
@@ -54,10 +57,16 @@ public class App {
      */
     public App(ConsoleInput input, PrintStream out,
                Repository<List<Pokemon>> pokemonRepo, Repository<Stats> statsRepo) {
+        this(input, out, pokemonRepo, statsRepo, null);
+    }
+
+    public App(ConsoleInput input, PrintStream out, Repository<List<Pokemon>> pokemonRepo,
+               Repository<Stats> statsRepo, BattleLogRepository battleLogs) {
         this.input = input;
         this.out = out;
         this.pokemonRepo = pokemonRepo;
         this.statsRepo = statsRepo;
+        this.battleLogs = battleLogs;
     }
 
     // Startpunkt: kopplar ihop repositories för Pokémon och statistik och startar appen.
@@ -68,7 +77,21 @@ public class App {
                 () -> PokemonCollection.starter().toList());
         Repository<Stats> statsRepo = new JsonRepository<>(
                 DATA_DIR.resolve("stats.json"), new TypeReference<>() {}, Stats::new);
-        new App(new ConsoleInput(System.in, out), out, pokemonRepo, statsRepo).run();
+        new App(new ConsoleInput(System.in, out), out, pokemonRepo, statsRepo, connectBattleLogs()).run();
+    }
+
+    /*
+     Kopplar upp mot MongoDB för stridsloggar. Database startar även PostgreSQL-poolen,
+     så saknas PG_PASSWORD eller är Docker inte igång går det inte. Då körs spelet
+     ändå, bara utan stridsloggar.
+     */
+    private static BattleLogRepository connectBattleLogs() {
+        try {
+            return BattleLogRepository.connect();
+        } catch (RuntimeException | ExceptionInInitializerError e) {
+            System.out.println("Stridsloggar är avstängda: databasen kunde inte nås.");
+            return null;
+        }
     }
 
     // Huvudloopen: visar menyn tills användaren väljer 0. Fångar fel så att programmet aldrig kraschar.
@@ -88,7 +111,9 @@ public class App {
                 .section("Fil")
                 .add("Spara till fil", this::saveToFile)
                 .add("Ladda från fil", this::loadFromFile)
-                .add("Återställ seed-data", this::resetSeed);
+                .add("Återställ seed-data", this::resetSeed)
+                .section("Databas")
+                .add("Stridsloggar (MongoDB)", this::showBattleLogs);
 
         try {
             boolean running = true;
@@ -391,6 +416,7 @@ public class App {
             try {
                 BattleResult result = battle.run();
                 stats.record(result);
+                saveBattleLog(result, pokemon, wild);
                 won = result.outcome() == BattleOutcome.WIN;
             } finally {
                 // Sparar efter varje strid, även om den avbryts (t.ex. Ctrl+D).
@@ -413,6 +439,45 @@ public class App {
                 "1. Fortsätt strida mot en ny vild Pokémon",
                 "0. Återgå till basen"));
         return input.readInt("Välj: ", 0, 1) == 1;
+    }
+
+    // Sparar striden i MongoDB. Går det inte fortsätter spelet ändå.
+    private void saveBattleLog(BattleResult result, Pokemon player, Pokemon opponent) {
+        if (battleLogs == null) {
+            return;
+        }
+        try {
+            battleLogs.save(result, player, opponent);
+        } catch (RuntimeException e) {
+            message("Obs", "Stridsloggen kunde inte sparas i MongoDB.");
+        }
+    }
+
+    // Menyval: visar alla sparade strider för en Pokémon, hämtade från MongoDB.
+    private void showBattleLogs() {
+        if (battleLogs == null) {
+            message("Stridsloggar", "MongoDB är inte ansluten.",
+                    "Starta Docker och sätt PG_PASSWORD, starta sedan om appen.");
+            return;
+        }
+        Optional<Pokemon> chosen = selectPokemon(collection.getAll(), "Välj Pokémon (0 för avbryt): ");
+        if (chosen.isEmpty()) {
+            return;
+        }
+        String name = chosen.get().getName();
+        List<Document> logs = battleLogs.findByPokemon(name);
+        if (logs.isEmpty()) {
+            message("Stridsloggar", name + " har inga sparade strider.");
+            return;
+        }
+        List<String> lines = new ArrayList<>();
+        for (Document log : logs) {
+            Object winner = log.get("winner");
+            lines.add(String.format("%tF %<tR  %-5s %2d rundor  vinnare: %s",
+                    log.getDate("playedAt"), log.getString("outcome"),
+                    log.getInteger("turns"), winner == null ? "ingen (flykt)" : winner));
+        }
+        Box.print(out, "Stridsloggar för " + name, lines);
     }
 
     // Menyval: visar sparad stridsstatistik i en ram.
