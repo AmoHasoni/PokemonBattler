@@ -81,6 +81,46 @@ public class PokemonDao {
         }
     }
 
+    // Hämtar id för en tränare, eller skapar tränaren om den inte finns.
+    public int findOrCreateTrainer(String name) throws SQLException {
+        String sql = """
+                INSERT INTO trainer(name) VALUES (?)
+                ON CONFLICT (name) DO UPDATE SET name = EXCLUDED.name
+                RETURNING trainer_id""";
+        try (Connection conn = Database.dataSource().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt("trainer_id");
+            }
+        }
+    }
+
+    // Finns en Pokémon med det namnet redan hos tränaren? Skiftläget spelar ingen roll, som i schemat.
+    public boolean exists(int trainerId, String name) throws SQLException {
+        String sql = "SELECT 1 FROM pokemon WHERE trainer_id = ? AND LOWER(name) = LOWER(?)";
+        try (Connection conn = Database.dataSource().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ps.setString(2, name);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    // Tar bort en Pokémon. Raderna i pokemon_attack försvinner via ON DELETE CASCADE.
+    public boolean deletePokemon(int trainerId, String name) throws SQLException {
+        String sql = "DELETE FROM pokemon WHERE trainer_id = ? AND LOWER(name) = LOWER(?)";
+        try (Connection conn = Database.dataSource().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trainerId);
+            ps.setString(2, name);
+            return ps.executeUpdate() > 0;
+        }
+    }
+
     // Som findOrCreateType, men på en befintlig anslutning så att den ingår i transaktionen.
     private int typeId(Connection conn, String typeName) throws SQLException {
         String sql = """

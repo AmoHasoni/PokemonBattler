@@ -17,6 +17,7 @@ import com.pokemonbattler.model.Pokemon;
 import com.pokemonbattler.model.Type;
 import com.pokemonbattler.persistence.BattleLogRepository;
 import com.pokemonbattler.persistence.JsonRepository;
+import com.pokemonbattler.persistence.PokemonDao;
 import com.pokemonbattler.persistence.Repository;
 import com.pokemonbattler.statistics.Stats;
 import com.pokemonbattler.ui.Box;
@@ -26,6 +27,7 @@ import org.bson.Document;
 
 import java.io.PrintStream;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,12 +40,16 @@ import java.util.Random;
  */
 public class App {
     private static final Path DATA_DIR = Path.of("data");
+    // Appen har en spelare, som sparas som en rad i tabellen trainer.
+    private static final String TRAINER_NAME = "Spelare";
 
     private final ConsoleInput input;
     private final PrintStream out;
     private final Repository<List<Pokemon>> pokemonRepo;
     private final Repository<Stats> statsRepo;
     private final BattleLogRepository battleLogs;   // null om databaserna inte nås
+    private final PokemonDao pokemonDao;            // null om databaserna inte nås
+    private final int trainerId;
     private final Random random = new Random();
     private final DamageCalculator calculator = new DamageCalculator(new TypeChart(), random);
     private final WildPokemonPool wildPool = new WildPokemonPool(random);
@@ -57,16 +63,19 @@ public class App {
      */
     public App(ConsoleInput input, PrintStream out,
                Repository<List<Pokemon>> pokemonRepo, Repository<Stats> statsRepo) {
-        this(input, out, pokemonRepo, statsRepo, null);
+        this(input, out, pokemonRepo, statsRepo, null, null, 0);
     }
 
     public App(ConsoleInput input, PrintStream out, Repository<List<Pokemon>> pokemonRepo,
-               Repository<Stats> statsRepo, BattleLogRepository battleLogs) {
+               Repository<Stats> statsRepo, BattleLogRepository battleLogs,
+               PokemonDao pokemonDao, int trainerId) {
         this.input = input;
         this.out = out;
         this.pokemonRepo = pokemonRepo;
         this.statsRepo = statsRepo;
         this.battleLogs = battleLogs;
+        this.pokemonDao = pokemonDao;
+        this.trainerId = trainerId;
     }
 
     // Startpunkt: kopplar ihop repositories för Pokémon och statistik och startar appen.
@@ -77,26 +86,33 @@ public class App {
                 () -> PokemonCollection.starter().toList());
         Repository<Stats> statsRepo = new JsonRepository<>(
                 DATA_DIR.resolve("stats.json"), new TypeReference<>() {}, Stats::new);
-        new App(new ConsoleInput(System.in, out), out, pokemonRepo, statsRepo, connectBattleLogs()).run();
-    }
 
-    /*
-     Kopplar upp mot MongoDB för stridsloggar. Database startar även PostgreSQL-poolen,
-     så saknas PG_PASSWORD eller är Docker inte igång går det inte. Då körs spelet
-     ändå, bara utan stridsloggar.
-     */
-    private static BattleLogRepository connectBattleLogs() {
+        /*
+         Kopplar upp mot PostgreSQL och MongoDB. Saknas PG_PASSWORD eller är Docker
+         inte igång körs spelet ändå, med bara JSON-filerna.
+         */
+        BattleLogRepository battleLogs = null;
+        PokemonDao pokemonDao = null;
+        int trainerId = 0;
         try {
-            return BattleLogRepository.connect();
-        } catch (RuntimeException | ExceptionInInitializerError e) {
-            System.out.println("Stridsloggar är avstängda: databasen kunde inte nås.");
-            return null;
+            pokemonDao = new PokemonDao();
+            trainerId = pokemonDao.findOrCreateTrainer(TRAINER_NAME);
+            battleLogs = BattleLogRepository.connect();
+        } catch (SQLException | RuntimeException | ExceptionInInitializerError e) {
+            Throwable cause = e.getCause() != null ? e.getCause() : e;
+            out.println("Databaserna kunde inte nås. Spelet körs bara med JSON-filer.");
+            out.println("Orsak: " + cause.getMessage());
+            pokemonDao = null;
+            battleLogs = null;
         }
+        new App(new ConsoleInput(System.in, out), out, pokemonRepo, statsRepo,
+                battleLogs, pokemonDao, trainerId).run();
     }
 
     // Huvudloopen: visar menyn tills användaren väljer 0. Fångar fel så att programmet aldrig kraschar.
     public void run() {
         loadAtStartup();
+        syncToDatabase();
         Menu menu = new Menu()
                 .section("Pokémon")
                 .add("Visa alla Pokémon", this::listAll)
@@ -248,6 +264,7 @@ public class App {
             Pokemon pokemon = new Pokemon(name, type, maxHp, speed);
             pokemon.addAttack(new Attack(attackName, baseDamage, accuracy, type));
             collection.add(pokemon);
+            saveToDatabase(pokemon);
             Box.print(out, pokemon.getName() + " har lagts till!", pokemon.formatDetails());
         } catch (InvalidPokemonException | InvalidAttackException e) {
             Box.print(out, "Kunde inte lägga till Pokémon", List.of(e.getMessage()));
@@ -270,6 +287,7 @@ public class App {
             return;
         }
         collection.remove(pokemon);
+        deleteFromDatabase(pokemon);
         confirm(pokemon.getName() + " har tagits bort.");
     }
 
@@ -439,6 +457,53 @@ public class App {
                 "1. Fortsätt strida mot en ny vild Pokémon",
                 "0. Återgå till basen"));
         return input.readInt("Välj: ", 0, 1) == 1;
+    }
+
+    // ---------- Databaser ----------
+
+    // Sparar de Pokémon som ännu inte finns i PostgreSQL, t.ex. startdatan första gången.
+    private void syncToDatabase() {
+        if (pokemonDao == null) {
+            return;
+        }
+        int saved = 0;
+        for (Pokemon pokemon : collection.getAll()) {
+            try {
+                if (!pokemonDao.exists(trainerId, pokemon.getName())) {
+                    pokemonDao.savePokemon(trainerId, pokemon);
+                    saved++;
+                }
+            } catch (SQLException e) {
+                message("Obs", pokemon.getName() + " kunde inte sparas i PostgreSQL: " + e.getMessage());
+            }
+        }
+        if (saved > 0) {
+            message("PostgreSQL", saved + " Pokémon sparades i databasen.");
+        }
+    }
+
+    // Sparar en ny Pokémon med sina attacker i PostgreSQL, i en transaktion.
+    private void saveToDatabase(Pokemon pokemon) {
+        if (pokemonDao == null) {
+            return;
+        }
+        try {
+            pokemonDao.savePokemon(trainerId, pokemon);
+        } catch (SQLException e) {
+            message("Obs", "Pokémonen sparades i filen men inte i PostgreSQL: " + e.getMessage());
+        }
+    }
+
+    // Tar bort en Pokémon från PostgreSQL. Kopplingarna till attacker försvinner via CASCADE.
+    private void deleteFromDatabase(Pokemon pokemon) {
+        if (pokemonDao == null) {
+            return;
+        }
+        try {
+            pokemonDao.deletePokemon(trainerId, pokemon.getName());
+        } catch (SQLException e) {
+            message("Obs", "Pokémonen togs bort från filen men inte från PostgreSQL: " + e.getMessage());
+        }
     }
 
     // Sparar striden i MongoDB. Går det inte fortsätter spelet ändå.
